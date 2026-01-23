@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const repo = "REPO"; // <-- put your GitHub repo name here
+const repo = "portfolio";
 const isProd = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
 
-  // Needed for https://USERNAME.github.io/REPO/
   basePath: isProd ? `/${repo}` : "",
   assetPrefix: isProd ? `/${repo}/` : "",
 };
