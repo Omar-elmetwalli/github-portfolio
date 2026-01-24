@@ -68,9 +68,8 @@ function PromptCard({
             <button
               onClick={onGenerate}
               disabled={generating}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                generating ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${generating ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
             >
               {generating ? "Generating..." : "Generate with AI"}
             </button>
@@ -78,9 +77,8 @@ function PromptCard({
 
           <button
             onClick={copyToClipboard}
-            className={`py-2 px-4 rounded-lg font-medium transition-colors ${
-              copied ? "bg-green-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+            className={`py-2 px-4 rounded-lg font-medium transition-colors ${copied ? "bg-green-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
           >
             {copied ? "✓ Copied!" : "Copy Prompt"}
           </button>
@@ -121,16 +119,17 @@ Please:
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const text = await callAi({
-        tool: "resume_tailor",
-        inputs: { roleTitle, jobDescription },
-        profile: {
+      const text = await callAi(
+        undefined,
+        "resume_tailor",
+        { roleTitle, jobDescription },
+        {
           name: profile.name,
           title: profile.title,
           summary: profile.summary,
           skills: profile.skills,
-        },
-      });
+        }
+      );
       setOutput(text);
     } catch (err: any) {
       setOutput(`Error: ${err.message || "Failed to generate. Try again later."}`);
@@ -201,16 +200,17 @@ Please provide:
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const text = await callAi({
-        tool: "job_fit",
-        inputs: { jobDescription },
-        profile: {
+      const text = await callAi(
+        undefined,
+        "job_fit",
+        { jobDescription },
+        {
           name: profile.name,
           title: profile.title,
           summary: profile.summary,
           skills: profile.skills,
-        },
-      });
+        }
+      );
       setOutput(text);
     } catch (err: any) {
       setOutput(`Error: ${err.message || "Failed to generate. Try again later."}`);
@@ -277,16 +277,17 @@ Include a disclaimer: "Estimate only, not a guarantee."`;
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const text = await callAi({
-        tool: "acceptance",
-        inputs: { companyType, jobDescription },
-        profile: {
+      const text = await callAi(
+        undefined,
+        "acceptance",
+        { companyType, jobDescription },
+        {
           name: profile.name,
           title: profile.title,
           summary: profile.summary,
           skills: profile.skills,
-        },
-      });
+        }
+      );
       setOutput(text);
     } catch (err: any) {
       setOutput(`Error: ${err.message || "Failed to generate. Try again later."}`);
@@ -359,16 +360,17 @@ Please generate:
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const text = await callAi({
-        tool: "cover_letter",
-        inputs: { company, role, tone },
-        profile: {
+      const text = await callAi(
+        undefined,
+        "cover_letter",
+        { company, role, tone },
+        {
           name: profile.name,
           title: profile.title,
           summary: profile.summary,
           skills: profile.skills,
-        },
-      });
+        }
+      );
       setOutput(text);
     } catch (err: any) {
       setOutput(`Error: ${err.message || "Failed to generate. Try again later."}`);
