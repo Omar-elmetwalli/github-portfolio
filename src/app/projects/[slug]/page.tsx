@@ -160,15 +160,18 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Gallery
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+           <div className="grid grid-cols-2 gap-4">
               {project.gallery.map((image, index) => (
                 <div
                   key={index}
-                  className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center"
+                  className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center w-full h-full"
                 >
-                  <p className="text-gray-500 dark:text-gray-500 text-sm">
-                    Image placeholder: {image}
-                  </p>
+                  <img
+                    src={image}
+                    alt={`Project image ${index + 1}`}
+                    className="w-full h-full object-contain object-center rounded-lg"
+                    style={{ background: "#fff" }}
+                  />
                 </div>
               ))}
             </div>

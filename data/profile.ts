@@ -7,7 +7,7 @@ export const profile = {
   linkedin: "https://linkedin.com/in/omar-elmetwally-ba272521b",
   github: "https://github.com/omar-elmetwalli",
   summary:
-    "Aerospace Engineering student with hands-on CFD, propulsion analysis, controls modeling, and CAD/DFM. I build simulation-driven engineering projects and prototypes.",
+    "Aerospace Engineering student interested in CFD, propulsion, and controls—building simulation-driven projects from concept to prototype. Research Assistant at UT Dallas and AIAA Student Chapter Chair & Founder.",
   skills: [
     "Computational Fluid Dynamics (CFD)",
     "Propulsion Systems",
@@ -15,15 +15,15 @@ export const profile = {
     "CAD/CAM (SolidWorks, CATIA)",
     "MATLAB/Simulink",
     "Python",
-    "Design for Manufacturing (DFM)",
+    "C++",
     "Finite Element Analysis (FEA)",
   ],
   education: [
     {
-      degree: "B.Sc. in Aerospace Engineering",
-      institution: "Cairo University",
+      degree: "B.Sc. Aerospace Engineering (Top 10 Ranked), GPA 3.4/4.0",
+      institution: "University of Science and Technology (Zewail City)",
       location: "Giza, Egypt",
-      period: "2021 - Present",
+      period: "Jun 2022 -- Jun 2027",
       details: "Focus on aerodynamics, propulsion, and control systems.",
     },
   ],
@@ -32,5 +32,7 @@ export const profile = {
     "Autonomous Systems",
     "Robotics",
     "Sustainable Aviation",
+    "Vehicle Dynamics",
+    "CubeSats"
   ],
 };

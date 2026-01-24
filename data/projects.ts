@@ -23,76 +23,95 @@ export const projects: Project[] = [
   {
     slug: "3dof-planar-robotic-arm",
     title: "3-DOF Planar Robotic Arm — Design, Kinematics & Prototype",
-    date: "2024-06",
+    date: "2025-12",
     tags: ["Robotics", "Kinematics", "CAD", "Prototyping"],
     tools: ["SolidWorks", "MATLAB", "Arduino", "3D Printing"],
     summary:
-      "Designed and built a 3-DOF planar robotic arm with forward/inverse kinematics, trajectory planning, and a functional prototype.",
+      "Designed, modeled, and built a low-cost 3-DOF planar robotic arm. Derived analytical FK/IK, built a MATLAB “digital twin” GUI for interactive control + safety checks, and drove SG90 servos via Arduino; validated performance with LiDAR measurements.",
     sections: [
       {
         title: "Problem",
         content:
-          "Needed to develop a low-cost robotic arm for educational purposes that demonstrates fundamental kinematics concepts while being manufacturable with accessible tools.",
+          "Build a low-cost 3-DOF manipulator that demonstrates the full pipeline from kinematic modeling to a working prototype, with safe interactive control via a GUI.",
       },
       {
         title: "Approach",
         content:
-          "Derived forward and inverse kinematics equations using DH parameters. Designed the mechanical structure in SolidWorks with DFM considerations. Implemented trajectory planning in MATLAB and controlled the prototype using Arduino with servo motors.",
+          "Derived analytical forward/inverse kinematics and verified them in a custom MATLAB digital twin (no robotics toolbox). Implemented safety checks (reachability + floor collision clamp + servo limit validation), then sent commands to an Arduino Uno driving SG90 servos using microsecond-level PWM mapping and trajectory smoothing. Designed a lightweight truss arm in CAD, exported DXF, and laser-cut 3mm plywood for fabrication and assembly.",
       },
       {
         title: "Results",
         content:
-          "Successfully built a working prototype capable of reaching target positions within ±2mm accuracy. The arm can execute smooth trajectories and pick-and-place operations.",
-      },
-      {
-        title: "What I Learned",
-        content:
-          "Gained deep understanding of robot kinematics, workspace analysis, and the challenges of translating theoretical models to physical systems. Improved skills in CAD design for manufacturing and embedded systems programming.",
+          `Achieved a functional prototype with real-time GUI control and stable motion. Load analysis showed a comfortable torque margin at the shoulder joint (Safety Factor ≈ 4.6). Validation using LiDAR measurements compared multiple target poses between the digital twin and the physical arm.
+
+How to translate clean math into hardware that won’t break: managing servo torque budgets with lightweight structures, implementing safety checks in software, and smoothing trajectories for stable motion. Gained hands-on experience with CAD design for laser cutting and Arduino servo control.
+
+Comparison between the MATLAB digital twin and the physical robotic arm. The images below show target pose validation using LiDAR measurements.`
       },
     ],
     links: {
       github: "https://github.com/placeholder/robotic-arm",
       demo: "",
-      paper: "",
+      paper: "/files/Mechatronics_Project_Report.pdf",
     },
-    gallery: ["/images/projects/robotic-arm-1.jpg", "/images/projects/robotic-arm-2.jpg"],
+
+    gallery: [
+      "/images/projects/robotic-arm/gui.png",
+      "/images/projects/robotic-arm/assembled.jpg"
+    ],
   },
   {
     slug: "cold-gas-rocket-engine",
     title: "Cold Gas Rocket Engine — Nozzle Design & Blowdown Simulation",
-    date: "2024-03",
+    date: "2026-01",
     tags: ["Propulsion", "CFD", "Thermodynamics", "Simulation"],
-    tools: ["ANSYS Fluent", "MATLAB", "SolidWorks", "Python"],
+    tools: ["MATLAB"], // Only MATLAB remains
     summary:
-      "Designed a cold gas thruster with optimized converging-diverging nozzle and simulated blowdown tank dynamics for attitude control applications.",
+      "Designed and simulated a blowdown cold-gas rocket engine using 1D compressible-flow relations. Sized a CD nozzle at P0=100 bar, T0=2200 K (perfect expansion), then coupled a time-marching adiabatic tank model to predict pressure/temperature, mass flow, and thrust vs time (with a Rayleigh heat-addition extension).",
     sections: [
       {
         title: "Problem",
         content:
-          "Design a cold gas propulsion system for a small satellite attitude control system, optimizing for specific impulse while maintaining simplicity and reliability.",
+          "Design a blowdown cold-gas rocket engine and predict transient performance using gas-dynamics fundamentals (choking, nozzle expansion, and adiabatic tank discharge).",
       },
       {
         title: "Approach",
         content:
-          "Applied isentropic flow relations to design the nozzle geometry. Used ANSYS Fluent for CFD analysis of the flow field. Developed a MATLAB model for blowdown tank thermodynamics to predict thrust decay over time.",
+          "Sized a CD nozzle at 100 bar / 2200 K with perfect expansion. Built a time-marching adiabatic rigid-tank model coupled to a choked nozzle to compute Pt(t), Tt(t), ṁ(t), and thrust. Bonus: added a constant-area Rayleigh heat-addition duct to capture stagnation-pressure losses and sized a combustor diameter for a low inlet Mach number.",
       },
       {
         title: "Results",
         content:
-          "Achieved a nozzle design with 98% theoretical efficiency. CFD results matched analytical predictions within 3%. Blowdown simulation accurately predicted 45-second operational window with nitrogen at 300 psi initial pressure.",
-      },
-      {
-        title: "What I Learned",
-        content:
-          "Deepened understanding of compressible flow, nozzle design trade-offs, and transient thermodynamic processes. Gained proficiency in CFD meshing strategies for high-speed flows.",
+          `Used real outputs from the report:
+
+Design point: P0,d = 100 bar, T0,d = 2200 K, perfect expansion to ambient
+
+Tank initial: Pt,0 = 200 bar, Tt,0 = 300 K, Vt = 0.5 m³, working gas: air
+
+Final nozzle sizing (Table 1):
+
+Dt = 20.0 mm
+Me = 3.68
+Ae/At = 8.05
+De = 56.7 mm
+
+Design thrust ≈ 4865 N (≈ 4.87 kN)
+
+Deepened understanding of compressible flow, nozzle design.`
       },
     ],
     links: {
       github: "https://github.com/placeholder/cold-gas-thruster",
       demo: "",
-      paper: "",
+      paper: "/files/gasdynamics_rocketproject .pdf",
     },
-    gallery: ["/images/projects/cold-gas-1.jpg", "/images/projects/cold-gas-2.jpg"],
+    gallery: [
+      "/images/projects/coldgas/Concept layout (Figure 1).png",
+      "/images/projects/coldgas/Nozzle geometry (Figure 2).png",
+      "/images/projects/coldgas/Rayleigh duct schematic (Figure 3) .png",
+      "/images/projects/coldgas/Performance plots (Figures 4.png",
+      "/images/projects/coldgas/Performance plots (Figures 5).png"
+    ],
   },
   {
     slug: "ramjet-engine-inlet-optimization",
@@ -116,12 +135,9 @@ export const projects: Project[] = [
       {
         title: "Results",
         content:
-          "Achieved 92% total pressure recovery with the optimized two-ramp configuration. Nozzle design produced 15% higher thrust compared to baseline. Documented stable operation from Mach 2.0 to 3.0.",
-      },
-      {
-        title: "What I Learned",
-        content:
-          "Mastered supersonic inlet design principles and shock-boundary layer interactions. Developed skills in design optimization and parametric CFD studies.",
+          `Achieved 92% total pressure recovery with the optimized two-ramp configuration. Nozzle design produced 15% higher thrust compared to baseline. Documented stable operation from Mach 2.0 to 3.0.
+
+Mastered supersonic inlet design principles and shock-boundary layer interactions. Developed skills in design optimization and parametric CFD studies.`
       },
     ],
     links: {
@@ -153,12 +169,9 @@ export const projects: Project[] = [
       {
         title: "Results",
         content:
-          "LQR controller reduced RMS body acceleration by 45% compared to passive suspension. Achieved 30% reduction in suspension travel variance. Controller remained stable across ±20% parameter variations.",
-      },
-      {
-        title: "What I Learned",
-        content:
-          "Gained practical experience in state-space modeling, controller design, and the trade-offs between competing performance objectives. Improved MATLAB/Simulink skills for control system simulation.",
+          `LQR controller reduced RMS body acceleration by 45% compared to passive suspension. Achieved 30% reduction in suspension travel variance. Controller remained stable across ±20% parameter variations.
+
+Gained practical experience in state-space modeling, controller design, and the trade-offs between competing performance objectives. Improved MATLAB/Simulink skills for control system simulation.`
       },
     ],
     links: {
@@ -188,3 +201,35 @@ export const filterProjectsByTags = (tags: string[]): Project[] => {
     tags.some((tag) => project.tags.includes(tag))
   );
 };
+
+export const coldGasCaptions = [
+  "Concept layout (Figure 1)",
+  "Nozzle geometry (Figure 2)",
+  "Rayleigh duct schematic (Figure 3)",
+  "Performance plot (Figure 4)",
+  "Performance plot (Figure 5)"
+];
+
+// Move the following rendering code into your React component file (e.g., ProjectGallery.tsx):
+// import { coldGasCaptions } from 'path/to/projects';
+// 
+// <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//   {project.gallery.map((image, idx) => (
+//     <div key={idx} className="text-center">
+//       <img
+//         src={image}
+//         alt={`Project image ${idx + 1}`}
+//         className="rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-2 w-full object-contain"
+//         style={{ background: "#fff", maxHeight: 320 }}
+//       />
+//     </div>
+//   ))}
+// </div>
+
+// Move the following JSX code into your React component file (e.g., ProjectGallery.tsx):
+// <section className="mb-12">
+//   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+//     Digital Twin vs. Real Prototype
+//   </h2>
+//   {/* ...comparison images... */}
+// </section>

@@ -1,0 +1,11 @@
+const handleUnlockTools = async () => {
+  const password = prompt("Enter password to unlock Tools:");
+  if (password && password.trim().toLowerCase() === "omarahmed") {
+    localStorage.setItem("tools_unlocked", "1");
+    setToolsUnlocked(true);
+    setToolsError(null);
+  } else {
+    setToolsError("Incorrect password.");
+    setTimeout(() => setToolsError(null), 2000);
+  }
+};

@@ -1,0 +1,11 @@
+// ...inside your ToolsPage component...
+const handleUnlock = (e: React.FormEvent) => {
+  e.preventDefault();
+  if (input.trim().toLowerCase() === "omarahmed") {
+    localStorage.setItem("tools_unlocked", "1");
+    setUnlocked(true);
+    setError(null);
+  } else {
+    setError("Incorrect password.");
+  }
+};

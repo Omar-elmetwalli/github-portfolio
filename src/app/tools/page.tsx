@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { profile } from "../../../data/profile";
 import { projects } from "../../../data/projects";
+import { callAi, ToolId } from "../../lib/callAi";
+
+const AI_ENDPOINT = process.env.NEXT_PUBLIC_AI_ENDPOINT || "";
 
 interface PromptCardProps {
   title: string;
@@ -10,9 +13,21 @@ interface PromptCardProps {
   children: React.ReactNode;
   prompt: string;
   disclaimer?: string;
+  onGenerate?: () => void;
+  isGenerating?: boolean;
+  isLoading?: boolean;
 }
 
-function PromptCard({ title, description, children, prompt, disclaimer }: PromptCardProps) {
+function PromptCard({
+  title,
+  description,
+  children,
+  prompt,
+  disclaimer,
+  onGenerate,
+  isGenerating,
+  isLoading,
+}: PromptCardProps) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {
@@ -42,31 +57,52 @@ function PromptCard({ title, description, children, prompt, disclaimer }: Prompt
       )}
       {children}
       <div className="mt-4">
-        <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg max-h-48 overflow-y-auto">
+        <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg max-h-96 overflow-y-auto">
           <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">
             {prompt}
           </pre>
         </div>
-        <button
-          onClick={copyToClipboard}
-          className={`mt-3 w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-            copied
+        <div className="mt-3 flex flex-col sm:flex-row gap-3">
+          {onGenerate && (
+            <button
+              onClick={onGenerate}
+              disabled={isLoading}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${isGenerating
+                ? "bg-purple-600 text-white opacity-90 cursor-wait"
+                : isLoading
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500"
+                  : "bg-purple-600 hover:bg-purple-700 text-white"
+                }`}
+            >
+              {isGenerating ? "Generating..." : "Generate with AI"}
+            </button>
+          )}
+          <button
+            onClick={copyToClipboard}
+            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${copied
               ? "bg-green-600 text-white"
               : "bg-blue-600 hover:bg-blue-700 text-white"
-          }`}
-        >
-          {copied ? "✓ Copied!" : "Copy Prompt"}
-        </button>
+              }`}
+          >
+            {copied ? "✓ Copied!" : "Copy Prompt"}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function ResumeTailorPrompt() {
+interface ToolProps {
+  generate: (tool: ToolId, inputs: any, setOutput: (s: string) => void) => void;
+  loadingTool: ToolId | null;
+}
+
+function ResumeTailorPrompt({ generate, loadingTool }: ToolProps) {
   const [roleTitle, setRoleTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [output, setOutput] = useState("");
 
-  const prompt = `You are a professional resume writer. Help me tailor my resume for the following position.
+  const template = `You are a professional resume writer. Help me tailor my resume for the following position.
 
 MY BACKGROUND:
 Name: ${profile.name}
@@ -89,11 +125,27 @@ Please:
 4. Provide specific bullet points I can use in my resume
 5. Suggest any skills gaps I should address`;
 
+  const handleGenerate = () => {
+    generate(
+      "resume_tailor",
+      {
+        roleTitle,
+        jobDescription,
+        instruction:
+          "tailored resume bullets + keywords to add. Format the response as LaTeX code (e.g. using \\item for bullets).",
+      },
+      setOutput
+    );
+  };
+
   return (
     <PromptCard
       title="Resume Tailor Prompt"
       description="Generate a prompt to help tailor your resume for a specific role."
-      prompt={prompt}
+      prompt={output || template}
+      onGenerate={handleGenerate}
+      isGenerating={loadingTool === "resume_tailor"}
+      isLoading={loadingTool !== null}
     >
       <div className="space-y-3">
         <input
@@ -115,10 +167,11 @@ Please:
   );
 }
 
-function JobFitCheckerPrompt() {
+function JobFitCheckerPrompt({ generate, loadingTool }: ToolProps) {
   const [jobDescription, setJobDescription] = useState("");
+  const [output, setOutput] = useState("");
 
-  const prompt = `Analyze how well my profile matches this job opportunity.
+  const template = `Analyze how well my profile matches this job opportunity.
 
 MY PROFILE:
 Name: ${profile.name}
@@ -127,7 +180,9 @@ Summary: ${profile.summary}
 Skills: ${profile.skills.join(", ")}
 
 MY PROJECTS:
-${projects.map((p) => `- ${p.title} (${p.tags.join(", ")}): ${p.summary}`).join("\n")}
+${projects
+      .map((p) => `- ${p.title} (${p.tags.join(", ")}): ${p.summary}`)
+      .join("\n")}
 
 JOB DESCRIPTION:
 ${jobDescription || "[Paste job description here]"}
@@ -140,11 +195,26 @@ Please provide:
 5. Recommendations (how to strengthen my application)
 6. Red Flags (any concerns a recruiter might have)`;
 
+  const handleGenerate = () => {
+    generate(
+      "job_fit",
+      {
+        jobDescription,
+        instruction:
+          "Match Score (0-100), Strengths, Gaps, Keywords, Next steps",
+      },
+      setOutput
+    );
+  };
+
   return (
     <PromptCard
       title="Job Fit Checker Prompt"
       description="Analyze how well your profile matches a job opportunity."
-      prompt={prompt}
+      prompt={output || template}
+      onGenerate={handleGenerate}
+      isGenerating={loadingTool === "job_fit"}
+      isLoading={loadingTool !== null}
     >
       <textarea
         placeholder="Paste job description here..."
@@ -157,11 +227,12 @@ Please provide:
   );
 }
 
-function AcceptanceLikelihoodPrompt() {
+function AcceptanceLikelihoodPrompt({ generate, loadingTool }: ToolProps) {
   const [jobDescription, setJobDescription] = useState("");
   const [companyType, setCompanyType] = useState("");
+  const [output, setOutput] = useState("");
 
-  const prompt = `Estimate my likelihood of getting this position based on my profile.
+  const template = `Estimate my likelihood of getting this position based on my profile.
 
 MY PROFILE:
 Name: ${profile.name}
@@ -171,9 +242,13 @@ Summary: ${profile.summary}
 Skills: ${profile.skills.join(", ")}
 
 MY PROJECTS:
-${projects.map((p) => `- ${p.title}: ${p.summary} | Tools: ${p.tools.join(", ")}`).join("\n")}
+${projects
+      .map((p) => `- ${p.title}: ${p.summary} | Tools: ${p.tools.join(", ")}`)
+      .join("\n")}
 
-COMPANY TYPE: ${companyType || "[Enter company type, e.g., Startup, Fortune 500, Research Lab]"}
+COMPANY TYPE: ${companyType ||
+    "[Enter company type, e.g., Startup, Fortune 500, Research Lab]"
+    }
 
 JOB DESCRIPTION:
 ${jobDescription || "[Paste job description here]"}
@@ -186,12 +261,28 @@ Please analyze:
 5. Suggestions to Improve Chances
 6. Alternative Roles (if this is a stretch, what similar roles might be better fits)`;
 
+  const handleGenerate = () => {
+    generate(
+      "acceptance",
+      {
+        companyType,
+        jobDescription,
+        instruction:
+          "include disclaimer 'Estimate only, not a guarantee' + score + reasons + improvements",
+      },
+      setOutput
+    );
+  };
+
   return (
     <PromptCard
       title="Acceptance Likelihood Prompt"
       description="Get an estimate of your chances for a specific position."
-      prompt={prompt}
+      prompt={output || template}
       disclaimer="Estimate only. Not a guarantee."
+      onGenerate={handleGenerate}
+      isGenerating={loadingTool === "acceptance"}
+      isLoading={loadingTool !== null}
     >
       <div className="space-y-3">
         <input
@@ -213,12 +304,20 @@ Please analyze:
   );
 }
 
-function CoverLetterPrompt() {
+function CoverLetterPrompt({ generate, loadingTool }: ToolProps) {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
   const [tone, setTone] = useState("professional");
+  const [jobDescription, setJobDescription] = useState(""); // Missing in previous code? User asked for inputs mapping: companyName, roleTitle, tone, jobDescription.
+  // Wait, user instructions say:
+  // "cover_letter inputs: { companyName, roleTitle, tone, jobDescription }"
+  // In the original file, CoverLetterPrompt did NOT have jobDescription input! It relied on context or user prompt.
+  // But user EXPLICITLY listed it in Inputs mapping.
+  // So I MUST ADD a jobDescription inputs field to the UI.
 
-  const prompt = `Write a cover letter and LinkedIn connection message for this opportunity.
+  const [output, setOutput] = useState("");
+
+  const template = `Write a cover letter and LinkedIn connection message for this opportunity.
 
 MY PROFILE:
 Name: ${profile.name}
@@ -234,6 +333,7 @@ TARGET:
 Company: ${company || "[Enter company name]"}
 Role: ${role || "[Enter role title]"}
 Tone: ${tone}
+Job Description: ${jobDescription || "[Paste job description]"}
 
 Please generate:
 
@@ -253,11 +353,29 @@ Please generate:
 - More context about my background
 - Specific value I can bring`;
 
+  const handleGenerate = () => {
+    generate(
+      "cover_letter",
+      {
+        companyName: company, // User says "companyName" in mapping, state is "company"
+        roleTitle: role, // User says "roleTitle", state is "role"
+        tone,
+        jobDescription,
+        instruction:
+          "1-page cover letter + short LinkedIn connection message. Format the cover letter part as LaTeX code.",
+      },
+      setOutput
+    );
+  };
+
   return (
     <PromptCard
       title="Cover Letter & LinkedIn Message"
       description="Generate personalized outreach content for job applications."
-      prompt={prompt}
+      prompt={output || template}
+      onGenerate={handleGenerate}
+      isGenerating={loadingTool === "cover_letter"}
+      isLoading={loadingTool !== null}
     >
       <div className="space-y-3">
         <input
@@ -284,6 +402,13 @@ Please generate:
           <option value="conversational">Conversational</option>
           <option value="formal">Formal</option>
         </select>
+        <textarea
+          placeholder="Paste job description here (optional but recommended)..."
+          value={jobDescription}
+          onChange={(e) => setJobDescription(e.target.value)}
+          rows={3}
+          className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 resize-none"
+        />
       </div>
     </PromptCard>
   );
@@ -356,6 +481,32 @@ Format the output so it can be easily copied into a portfolio data file.`;
 }
 
 export default function ToolsPage() {
+  const [loadingTool, setLoadingTool] = useState<ToolId | null>(null);
+
+  const generate = async (
+    tool: ToolId,
+    inputs: any,
+    setOutput: (s: string) => void
+  ) => {
+    if (!AI_ENDPOINT) {
+      setOutput(
+        "AI endpoint not configured. Set NEXT_PUBLIC_AI_ENDPOINT in .env.local"
+      );
+      return;
+    }
+
+    setLoadingTool(tool);
+    setOutput("Generating...");
+    try {
+      const result = await callAi(AI_ENDPOINT, tool, inputs, profile);
+      setOutput(result);
+    } catch (err: any) {
+      setOutput(`AI error: ${err.message}`);
+    } finally {
+      setLoadingTool(null);
+    }
+  };
+
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="max-w-6xl mx-auto">
@@ -365,21 +516,27 @@ export default function ToolsPage() {
             Career Tools
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
-            AI-powered prompt generators to help with your job search. Copy these prompts and use them with your favorite AI assistant.
+            AI-powered prompt generators to help with your job search. Copy
+            these prompts and use them with your favorite AI assistant.
           </p>
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              <strong>Free Mode:</strong> These tools generate prompts personalized with your profile data. Copy the prompt and paste it into ChatGPT, Claude, or any AI assistant.
+              <strong>Free Mode:</strong> These tools generate prompts
+              personalized with your profile data. Copy the prompt and paste it
+              into ChatGPT, Claude, or any AI assistant.
             </p>
           </div>
         </div>
 
         {/* Tools Grid */}
         <div className="grid md:grid-cols-2 gap-6">
-          <ResumeTailorPrompt />
-          <JobFitCheckerPrompt />
-          <AcceptanceLikelihoodPrompt />
-          <CoverLetterPrompt />
+          <ResumeTailorPrompt generate={generate} loadingTool={loadingTool} />
+          <JobFitCheckerPrompt generate={generate} loadingTool={loadingTool} />
+          <AcceptanceLikelihoodPrompt
+            generate={generate}
+            loadingTool={loadingTool}
+          />
+          <CoverLetterPrompt generate={generate} loadingTool={loadingTool} />
           <ProjectPagePrompt />
         </div>
       </div>
