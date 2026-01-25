@@ -8,6 +8,10 @@ export default function ProjectsPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const allTags = getAllTags();
 
+  const isProd = process.env.NODE_ENV === "production";
+  const basePath = isProd ? "/github-portfolio" : "";
+  const prefixPath = (path: string) => (path.startsWith("/") ? `${basePath}${path}` : path);
+
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -44,8 +48,8 @@ export default function ProjectsPage() {
                 key={tag}
                 onClick={() => toggleTag(tag)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedTags.includes(tag)
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
               >
                 {tag}
@@ -74,7 +78,7 @@ export default function ProjectsPage() {
               <div className="aspect-video w-full bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
                 {project.gallery && project.gallery.length > 0 ? (
                   <img
-                    src={project.gallery[0]}
+                    src={prefixPath(project.gallery[0])}
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />

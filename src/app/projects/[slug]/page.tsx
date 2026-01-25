@@ -31,6 +31,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
 
+  const isProd = process.env.NODE_ENV === "production";
+  const basePath = isProd ? "/github-portfolio" : "";
+  const prefixPath = (path: string) => (path.startsWith("/") ? `${basePath}${path}` : path);
+
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="max-w-4xl mx-auto">
@@ -113,7 +117,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <div className="flex flex-wrap gap-4">
               {project.links.github && (
                 <a
-                  href={project.links.github}
+                  href={prefixPath(project.links.github)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
@@ -126,7 +130,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               )}
               {project.links.demo && (
                 <a
-                  href={project.links.demo}
+                  href={prefixPath(project.links.demo)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -139,7 +143,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               )}
               {project.links.paper && (
                 <a
-                  href={project.links.paper}
+                  href={prefixPath(project.links.paper)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -160,14 +164,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Gallery
             </h2>
-           <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {project.gallery.map((image, index) => (
                 <div
                   key={index}
                   className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center w-full h-full"
                 >
                   <img
-                    src={image}
+                    src={prefixPath(image)}
                     alt={`Project image ${index + 1}`}
                     className="w-full h-full object-contain object-center rounded-lg"
                     style={{ background: "#fff" }}
