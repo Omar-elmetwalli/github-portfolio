@@ -118,34 +118,32 @@ Deepened understanding of compressible flow, nozzle design.`
     title: "Ramjet Engine — Two-Ramp Inlet & Nozzle Optimization",
     date: "2024-01",
     tags: ["Propulsion", "CFD", "Aerodynamics", "Optimization"],
-    tools: ["ANSYS Fluent", "MATLAB", "Python", "SolidWorks"],
+    tools: ["MATLAB"],
     summary:
-      "Optimized a two-ramp supersonic inlet and nozzle for a ramjet engine operating at Mach 2.5, maximizing pressure recovery and thrust.",
+      "Optimized a fixed-geometry two-ramp supersonic inlet and choked C–D nozzle for a ramjet at Mach 2.75, maximizing net thrust while maintaining strong total-pressure recovery within a 25×25 cm cross-section.",
     sections: [
       {
         title: "Problem",
         content:
-          "Design an efficient supersonic inlet for a ramjet engine that minimizes total pressure loss while ensuring stable operation across a range of flight conditions.",
+          "Design a ramjet flowpath (two-ramp inlet, diffuser, Rayleigh-flow combustor, and nozzle) constrained to a 25×25 cm square cross-section. The inlet must provide high total-pressure recovery, while the nozzle/combustor settings maximize net thrust at the Mach 2.75 design condition.",
       },
       {
         title: "Approach",
         content:
-          "Used oblique shock theory to determine optimal ramp angles for Mach 2.5 cruise. Performed parametric CFD studies varying ramp angles and cowl position. Optimized nozzle expansion ratio for maximum thrust.",
+          "Built a MATLAB-based ramjet cycle model with an oblique–oblique–normal inlet, isentropic diffuser, Rayleigh-flow combustor (with additional total-pressure loss), and a quasi-1D choked converging–diverging nozzle. Performed a robust grid search over ramp angles and nozzle sizing under attached-shock and geometric constraints, then evaluated fixed-geometry off-design behavior at Mach 2.0 and Mach 4.0.",
       },
       {
         title: "Results",
         content:
-          `Achieved 92% total pressure recovery with the optimized two-ramp configuration. Nozzle design produced 15% higher thrust compared to baseline. Documented stable operation from Mach 2.0 to 3.0.
-
-Mastered supersonic inlet design principles and shock-boundary layer interactions. Developed skills in design optimization and parametric CFD studies.`
+          `Optimized ramp angles to θ1 = 14.5° and θ2 = 17.5°, achieving intake total-pressure recovery Pt3/Pt0 = 0.8086 (~81%). At the Mach 2.75 design point the engine produced ~6.26 kN net thrust (ṁ = 9.88 kg/s; specific thrust = 633 N/(kg/s)) within the 25×25 cm envelope (At = 0.0562 m², Ae = 0.0625 m²). Off-design analysis showed unstart at Mach 2.0 (shock-2 detachment) and strong high-speed potential at Mach 4.0, reaching 13.67 kN maximum net thrust at Tt5 = 2200 K.`
       },
     ],
     links: {
       github: "https://github.com/placeholder/ramjet-inlet",
       demo: "",
-      paper: "",
+      paper: "/files/gasdynamics_scramjetProject (1).pdf",
     },
-    gallery: ["/images/projects/ramjet-1.jpg", "/images/projects/ramjet-2.jpg"],
+    gallery: ["/images/projects/scramjet/scremjet.png"],
   },
   {
     slug: "active-suspension-lqr",
@@ -212,7 +210,7 @@ export const coldGasCaptions = [
 
 // Move the following rendering code into your React component file (e.g., ProjectGallery.tsx):
 // import { coldGasCaptions } from 'path/to/projects';
-// 
+//
 // <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //   {project.gallery.map((image, idx) => (
 //     <div key={idx} className="text-center">
