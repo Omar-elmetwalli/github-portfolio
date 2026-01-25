@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || "",
-});
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const GEMINI_MODEL = "gemini-1.5-pro"; // or gemini-1.5-flash
 
 export async function POST(request: Request) {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!GEMINI_API_KEY) {
         return NextResponse.json(
-            { text: "Server Error: OPENAI_API_KEY not configured" },
+            { text: "Server Error: GEMINI_API_KEY not configured" },
             { status: 500 }
         );
     }
@@ -68,16 +66,40 @@ export async function POST(request: Request) {
             return NextResponse.json({ text: "Unknown tool" }, { status: 400 });
         }
 
-        const completion = await openai.chat.completions.create({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt },
-            ],
-            model: "gpt-4", // or gpt-3.5-turbo
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        parts: [
+                            {
+                                text: `${systemPrompt}\n\n${userPrompt}`
+                            }
+                        ]
+                    }
+                ]
+            }),
         });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || "Failed to generate response from Gemini");
+        }
+
+        const data = await response.json();
+        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!generatedText) {
+            throw new Error("Invalid response format from Gemini");
+        }
+
         return NextResponse.json({
-            text: completion.choices[0].message.content,
+            text: generatedText,
         });
     } catch (error: any) {
         console.error("AI Error:", error);

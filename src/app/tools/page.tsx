@@ -4,6 +4,8 @@ import { useState } from "react";
 import { profile } from "../../../data/profile";
 import { projects } from "../../../data/projects";
 import { callAi, ToolId } from "../../lib/callAi";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const AI_ENDPOINT = process.env.NEXT_PUBLIC_AI_ENDPOINT || "";
 
@@ -482,6 +484,28 @@ Format the output so it can be easily copied into a portfolio data file.`;
 
 export default function ToolsPage() {
   const [loadingTool, setLoadingTool] = useState<ToolId | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unlocked = localStorage.getItem("tools_unlocked") === "1";
+    if (!unlocked) {
+      router.push("/");
+    } else {
+      setIsUnlocked(true);
+    }
+  }, [router]);
+
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Locked</h1>
+          <p className="text-gray-600">Please unlock this page via the navbar.</p>
+        </div>
+      </div>
+    );
+  }
 
   const generate = async (
     tool: ToolId,
