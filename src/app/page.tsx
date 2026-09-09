@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { profile } from "../../data/profile";
 import { projects } from "../../data/projects";
+import { leadershipRoles } from "../../data/leadership";
 
 export default function Home() {
   const featuredProjects = projects.slice(0, 3);
@@ -106,6 +107,70 @@ export default function Home() {
                   {project.date}
                 </p>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Leadership Spotlight Section */}
+      <section className="py-16 px-4 bg-gray-50 dark:bg-gray-900/40 border-y border-gray-200 dark:border-gray-800">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                Extracurricular & Impact
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                Leadership
+              </h2>
+            </div>
+            <Link
+              href="/leadership"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              Learn More →
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-1 gap-6">
+            {leadershipRoles.map((role) => (
+              <div
+                key={role.id}
+                className="p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                  <span className="px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full w-fit">
+                    {role.status} • {role.period}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {role.location}
+                  </span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                  {role.title} — {role.organization}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                  {role.summary}
+                </p>
+                <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <div className="flex flex-wrap gap-2">
+                    {role.tags.slice(0, 4).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md text-xs font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <Link
+                    href="/leadership"
+                    className="inline-flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    View Activities & Initiatives →
+                  </Link>
+                </div>
+              </div>
             ))}
           </div>
         </div>
