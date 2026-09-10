@@ -51,7 +51,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
         {/* Header */}
         <header className="mb-12">
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            {project.confidential && (
+              <span className="px-3 py-1 text-xs font-semibold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 rounded-full border border-amber-300 dark:border-amber-700 flex items-center gap-1.5">
+                🔒 Confidential / In-Progress Research
+              </span>
+            )}
             {project.tags.map((tag) => (
               <span
                 key={tag}
@@ -158,26 +163,38 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           </section>
         )}
 
-        {/* Gallery Placeholder */}
+        {/* Gallery / Media Section */}
         {project.gallery.length > 0 && (
           <section className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Gallery
+              Project Media & Gallery
             </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {project.gallery.map((image, index) => (
-                <div
-                  key={index}
-                  className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center w-full h-full"
-                >
-                  <img
-                    src={prefixPath(image)}
-                    alt={`Project image ${index + 1}`}
-                    className="w-full h-full object-contain object-center rounded-lg"
-                    style={{ background: "#fff" }}
-                  />
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {project.gallery.map((media, index) => {
+                const isVideo = media.endsWith(".mp4") || media.endsWith(".webm");
+                return (
+                  <div
+                    key={index}
+                    className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden flex items-center justify-center w-full h-full border border-gray-200 dark:border-gray-700 shadow-sm"
+                  >
+                    {isVideo ? (
+                      <video
+                        src={prefixPath(media)}
+                        controls
+                        playsInline
+                        className="w-full h-full object-contain rounded-xl bg-black"
+                      />
+                    ) : (
+                      <img
+                        src={prefixPath(media)}
+                        alt={`Project visual ${index + 1}`}
+                        className="w-full h-full object-contain object-center rounded-xl"
+                        style={{ background: "#fff" }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}

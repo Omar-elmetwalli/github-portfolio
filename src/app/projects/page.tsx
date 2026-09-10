@@ -94,7 +94,12 @@ export default function ProjectsPage() {
 
               {/* Project Card Content */}
               <div className="p-6 flex flex-col flex-grow">
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  {project.confidential && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 rounded border border-amber-300 dark:border-amber-700">
+                      Confidential
+                    </span>
+                  )}
                   {project.tags.map((tag) => (
                     <span
                       key={tag}

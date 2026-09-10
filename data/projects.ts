@@ -10,6 +10,7 @@ export interface Project {
   tags: string[];
   tools: string[];
   summary: string;
+  confidential?: boolean;
   sections: ProjectSection[];
   links: {
     github?: string;
@@ -20,6 +21,102 @@ export interface Project {
 }
 
 export const projects: Project[] = [
+  {
+    "slug": "ml-augmented-turbulence-modeling",
+    "title": "Physics-Informed Deep Learning & Neural Operators for Multiscale Turbulence Modeling",
+    "date": "2024 \u2014 Present",
+    "tags": [
+      "Research",
+      "Scientific Machine Learning",
+      "CFD",
+      "Turbulence",
+      "Deep Learning",
+      "Physics-Informed ML"
+    ],
+    "tools": [
+      "PyTorch",
+      "Python",
+      "JHTDB",
+      "MATLAB",
+      "Spectral Methods",
+      "FFT"
+    ],
+    "confidential": true,
+    "summary": "Developing physics-informed deep learning architectures (including 3D U-Nets, Progressive Decoders, and Neural Operators) for high-fidelity turbulence datasets (Johns Hopkins Turbulence Databases) and wind-farm LES. Enforcing exact physical conservation laws: momentum-deficit conservation, actuator-line-model body-force conditioning, vorticity transport constraints, Leray projection, and adaptive correction modules. Co-authoring manuscript with Dr. Mahmoud Ayyad (Stevens Institute) and Ahmed Hamada (UT Dallas).",
+    "sections": [
+      {
+        "title": "Research Overview & Physical Objectives",
+        "content": "Conducting advanced computational research at the intersection of high-fidelity Computational Fluid Dynamics (CFD) and data-driven Deep Learning. Purely data-driven neural networks often violate basic fluid principles; this project tackles that challenge by building physics-informed architectures that enforce conservation of mass and momentum, Galilean invariance, and vorticity dynamics across complex wall-bounded and free-shear turbulent flows."
+      },
+      {
+        "title": "Physics Constraints & Invariant Encodings",
+        "content": "Developing network layers that incorporate exact physical inductive biases, including Leray projection for divergence-free velocity field enforcement, actuator-line-model body-force conditioning, and vorticity transport constraints. Analyzing spatial frequency characteristics via Fourier transforms (FFT) and progressive decoders to reconstruct subtle small-scale turbulent structures from high-dimensional datasets such as the Johns Hopkins Turbulence Databases (JHTDB)."
+      },
+      {
+        "title": "Operator Learning & Comparative Analysis",
+        "content": "Trained and benchmarked Neural Operator (NO) and Adversarial Neural Operator architectures against direct numerical simulation (DNS) ground truth. Evaluated spatial velocity fields, turbulent kinetic energy spectra, Velocity Gradient Tensor (VGT) invariants (Q and R), and coherent vortex structures to ensure the surrogate model faithfully generalizes across Reynolds numbers."
+      },
+      {
+        "title": "Scholarly Manuscript & Confidentiality Notice",
+        "content": "This work is part of an ongoing international research collaboration with Dr. Mahmoud Ayyad (Stevens Institute of Technology) and Ahmed Hamada (UT Dallas), targeting scholarly publication in 2026. Specific loss formulations, architectural configurations, and proprietary training datasets are confidential; presented here is a high-level conceptual summary alongside comparative validation media."
+      }
+    ],
+    "links": {},
+    "gallery": [
+      "/images/projects/cfd-ml-turbulence/ground_truth.png",
+      "/images/projects/cfd-ml-turbulence/neural_operator.png",
+      "/images/projects/cfd-ml-turbulence/adv_neural_operator.png",
+      "/images/projects/cfd-ml-turbulence/cfd_ml_simulation.mp4"
+    ]
+  },
+  {
+    "slug": "openfoam-parametric-airfoil-study",
+    "title": "Parametric NACA Airfoil OpenFOAM CFD Study & Gaussian Process Surrogate Modeling",
+    "date": "2024-11",
+    "tags": [
+      "CFD",
+      "OpenFOAM",
+      "Aerodynamics",
+      "Machine Learning",
+      "Surrogate Modeling",
+      "RANS"
+    ],
+    "tools": [
+      "OpenFOAM v2306",
+      "simpleFoam",
+      "blockMesh",
+      "Spalart-Allmaras RANS",
+      "Python",
+      "Scikit-Learn"
+    ],
+    "confidential": false,
+    "summary": "Architected and executed an automated end-to-end parametric CFD pipeline in OpenFOAM across 81 aerodynamic cases (9 cambers \u00d7 9 angles of attack) using 5-block structured C-grids and the Spalart-Allmaras RANS turbulence model. Trained a Gaussian Process Regression (GPR) surrogate model achieving leave-one-case-out cross-validated R\u00b2 > 0.997.",
+    "sections": [
+      {
+        "title": "Automated Parametric Pipeline Architecture",
+        "content": "Engineered a modular, script-driven OpenFOAM framework divided into three automated stages: (1) generate_cases.py automatically generates 81 case directories and customized blockMeshDict files for each geometry with rotated freestream velocities (Ux = Uinf*cos(alpha), Uy = Uinf*sin(alpha)) and aligned wind-axis force directions; (2) Allrun_Ubuntu.sh coordinates automated blockMesh execution and sequential simpleFoam runs; (3) extract_results.py reads postProcessing/forceCoeffs directories and outputs clean summary tables and publication-ready polar plots."
+      },
+      {
+        "title": "5-Block Structured C-Grid & Numerical Discretization",
+        "content": "Implemented high-quality 5-block structured C-mesh topologies with curved block boundaries wrapped around the airfoil profile. Enforced orthogonal cell orientation near the wall to ensure fine boundary-layer resolution for the Spalart-Allmaras (SA) one-equation turbulence model. Configured bounded second-order upwind schemes in fvSchemes and converged steady-state incompressible flow (Uinf = 45 m/s, chord = 1.0 m, sea-level air density rho = 1.225 kg/m\u00b3) using the SIMPLE algorithm."
+      },
+      {
+        "title": "Parametric Aerodynamic Sweep & Results",
+        "content": "Simulated a comprehensive matrix of 81 aerodynamic operating points spanning 9 camber ratios (m = 1.0% to 5.0% chord, fixed p = 40%c, t = 12%c) and 9 angles of attack (AoA from -2\u00b0 to +14\u00b0). Analyzed the variation of lift coefficient (Cl), drag coefficient (Cd), pitching moment (CmPitch), and aerodynamic efficiency (Cl/Cd) as a function of camber and angle of attack, capturing the linear lift slope, zero-lift angle shift, and onset of flow separation."
+      },
+      {
+        "title": "Gaussian Process Regression (GPR) Surrogate",
+        "content": "Trained a multi-output Gaussian Process Regression (GPR) surrogate on the extracted CFD dataset. The surrogate model delivers instant, millisecond-level aerodynamic coefficient inference for any arbitrary camber and AoA combination within the design envelope, achieving a cross-validated coefficient of determination R\u00b2 > 0.997 across all test partitions."
+      }
+    ],
+    "links": {},
+    "gallery": [
+      "/images/projects/openfoam-airfoil-study/cl_vs_aoa.png",
+      "/images/projects/openfoam-airfoil-study/cd_vs_aoa.png",
+      "/images/projects/openfoam-airfoil-study/cm_vs_aoa.png",
+      "/images/projects/openfoam-airfoil-study/cl_vs_cd_polar.png"
+    ]
+  },
   {
     "slug": "boeing-747-flight-dynamics-autopilot",
     "title": "Boeing 747 Flight Dynamics \u2014 Modal Stability & Classical Autopilot Design",
@@ -232,7 +329,7 @@ export const projects: Project[] = [
       "Arduino",
       "3D Printing"
     ],
-    "summary": "Designed, modeled, and built a low-cost 3-DOF planar robotic arm. Derived analytical FK/IK, built a MATLAB  digital twin GUI for interactive control + safety checks, and drove SG90 servos via Arduino; validated performance with LiDAR measurements.",
+    "summary": "Designed, modeled, and built a low-cost 3-DOF planar robotic arm. Derived analytical FK/IK, built a MATLAB \u201cdigital twin\u201d GUI for interactive control + safety checks, and drove SG90 servos via Arduino; validated performance with LiDAR measurements.",
     "sections": [
       {
         "title": "Problem",
@@ -306,7 +403,7 @@ export const projects: Project[] = [
       "SolidWorks",
       "Engineering Calculations"
     ],
-    "summary": "Engineered a closed-loop recirculating aquaponics facility (fish tank, grow beds, biofilter, radial flow clarifier). Derived analytical fluid mechanics models for automatic Bell Siphon cyclical dosing, sized Venturi aeration and flowmeter devices per ASME MFC-3M-2004, and completed 2D CAD engineering drawings and market bill of materials.",
+    "summary": "Engineered a closed-loop recirculating aquaponics facility (fish tank, grow beds, biofilter, radial flow clarifier). Derived analytical fluid mechanics models for automatic Bell Siphon cyclical dosing, sized Venturi aeration and flowmeter devices per ASME MFC-3M-2004, and completed 2D CAD engineering drawings, viscometer experimental validations, and market bill of materials.",
     "sections": [
       {
         "title": "Problem & System Architecture",
@@ -321,8 +418,8 @@ export const projects: Project[] = [
         "content": "Applied ASME MFC-3M-2004 standards at Re = 10^5 to calculate Venturi constriction geometry (converging/diverging lengths 140 mm, throat diameter 20 mm, discharge coefficient Cd = 0.99). Optimized Venturi suction for microbubble oxygenation in the fish tank."
       },
       {
-        "title": "CAD Drawings & Economic Feasibility",
-        "content": "Generated multi-view engineering drawings (Front, Side, Top views) with full piping schematics and produced a comprehensive market procurement analysis totaling \u2248 ."
+        "title": "CAD Drawings & Experimental Validation",
+        "content": "Generated multi-view engineering drawings (Front, Side, Top views) with full piping schematics and conducted fluid viscometer experiments for fluid property characterization, accompanied by comprehensive economic analysis totaling \u2248 $1900."
       }
     ],
     "links": {
@@ -332,7 +429,8 @@ export const projects: Project[] = [
       "/images/projects/aquaponic-system/aquaponic_system.png",
       "/images/projects/aquaponic-system/viscometer_cad.png",
       "/images/projects/aquaponic-system/viscometer_1.png",
-      "/images/projects/aquaponic-system/viscometer_2.png"
+      "/images/projects/aquaponic-system/viscometer_2.png",
+      "/images/projects/aquaponic-system/viscometer_experiment.mp4"
     ]
   },
   {
