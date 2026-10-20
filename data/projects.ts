@@ -16,6 +16,9 @@ export interface Project {
     github?: string;
     demo?: string;
     paper?: string;
+    paperTitle?: string;
+    report?: string;
+    reportTitle?: string;
   };
   gallery: string[];
 }
@@ -71,18 +74,21 @@ export const projects: Project[] = [
   },
   {
     "slug": "openfoam-parametric-airfoil-study",
-    "title": "Parametric NACA Airfoil OpenFOAM CFD Study & Gaussian Process Surrogate Modeling",
-    "date": "2024-11",
+    "title": "Parametric NACA Airfoil OpenFOAM CFD Study, GPR Surrogates & Physics-Informed Neural Networks (PINN)",
+    "date": "2024-11 — Present",
     "tags": [
       "CFD",
       "OpenFOAM",
-      "Aerodynamics",
-      "Machine Learning",
+      "Scientific Machine Learning",
+      "PINN",
+      "Physics-Informed ML",
       "Surrogate Modeling",
+      "Aerodynamics",
       "RANS"
     ],
     "tools": [
       "OpenFOAM v2306",
+      "PyTorch",
       "simpleFoam",
       "blockMesh",
       "Spalart-Allmaras RANS",
@@ -90,31 +96,47 @@ export const projects: Project[] = [
       "Scikit-Learn"
     ],
     "confidential": false,
-    "summary": "Architected and executed an automated end-to-end parametric CFD pipeline in OpenFOAM across 81 aerodynamic cases (9 cambers \u00d7 9 angles of attack) using 5-block structured C-grids and the Spalart-Allmaras RANS turbulence model. Trained a Gaussian Process Regression (GPR) surrogate model achieving leave-one-case-out cross-validated R\u00b2 > 0.997.",
+    "summary": "Built an automated end-to-end parametric CFD pipeline in OpenFOAM across 81 cases (camber 1.0%–5.0% and AoA -2° to +14°) using structured 5-block C-grids and Spalart-Allmaras RANS. Developed both Gaussian Process surrogates for instant force predictions (R² = 0.9992) and a deep Parametric Physics-Informed Neural Network (PINN) predicting continuous 2D velocity, pressure, and eddy-viscosity fields in under 5 ms.",
     "sections": [
       {
-        "title": "Automated Parametric Pipeline Architecture",
-        "content": "Engineered a modular, script-driven OpenFOAM framework divided into three automated stages: (1) generate_cases.py automatically generates 81 case directories and customized blockMeshDict files for each geometry with rotated freestream velocities (Ux = Uinf*cos(alpha), Uy = Uinf*sin(alpha)) and aligned wind-axis force directions; (2) Allrun_Ubuntu.sh coordinates automated blockMesh execution and sequential simpleFoam runs; (3) extract_results.py reads postProcessing/forceCoeffs directories and outputs clean summary tables and publication-ready polar plots."
+        "title": "Automated OpenFOAM Pipeline & Mesh Generation",
+        "content": "I structured the OpenFOAM pipeline across three core scripts to handle 81 aerodynamic cases without manual intervention. First, generate_cases.py computes NACA 4-digit analytical coordinates, writes customized blockMeshDict files with a closed trailing edge (yt = 0 at xi = 1.0 to avoid zero-volume cell collapse), sets the angle of attack through the freestream velocity vector (Ux = Uinf*cos(alpha), Uy = Uinf*sin(alpha)), and configures wind-axis drag/lift direction vectors for the forceCoeffs function object. Second, Allrun_Ubuntu.sh generates the structured mesh once per airfoil base case, copies polyMesh into each AoA sub-case to save disk time, and runs steady simpleFoam. Finally, extract_results.py parses the output force coefficients and builds clean CSV summaries and aerodynamic polars."
       },
       {
-        "title": "5-Block Structured C-Grid & Numerical Discretization",
-        "content": "Implemented high-quality 5-block structured C-mesh topologies with curved block boundaries wrapped around the airfoil profile. Enforced orthogonal cell orientation near the wall to ensure fine boundary-layer resolution for the Spalart-Allmaras (SA) one-equation turbulence model. Configured bounded second-order upwind schemes in fvSchemes and converged steady-state incompressible flow (Uinf = 45 m/s, chord = 1.0 m, sea-level air density rho = 1.225 kg/m\u00b3) using the SIMPLE algorithm."
+        "title": "5-Block Structured C-Grid & Numerical Schemes",
+        "content": "To guarantee clean boundary-layer resolution and prevent skewed or degenerate cells, I developed a structured 5-block C-grid topology. The C-arc wraps continuously around the leading edge, eliminating collinear vertex errors and inverted blocks that often break multi-block grids at high camber. The mesh uses 60 cells along the airfoil profile, 70 along the wake, and 80 in the wall-normal direction with a 100:1 geometric grading, maintaining y+ ≈ 1 for the Spalart-Allmaras (SA) one-equation turbulence model. In fvSchemes and fvSolution, I used bounded second-order linearUpwind for momentum divergence, Gauss linear corrected for Laplacian schemes, and GAMG multigrid solvers with relaxation factors of 0.3 for pressure and 0.7 for velocity and nuTilda."
       },
       {
-        "title": "Parametric Aerodynamic Sweep & Results",
-        "content": "Simulated a comprehensive matrix of 81 aerodynamic operating points spanning 9 camber ratios (m = 1.0% to 5.0% chord, fixed p = 40%c, t = 12%c) and 9 angles of attack (AoA from -2\u00b0 to +14\u00b0). Analyzed the variation of lift coefficient (Cl), drag coefficient (Cd), pitching moment (CmPitch), and aerodynamic efficiency (Cl/Cd) as a function of camber and angle of attack, capturing the linear lift slope, zero-lift angle shift, and onset of flow separation."
+        "title": "Aerodynamic Sweep & Gaussian Process Surrogate",
+        "content": "I conducted sweeps across 9 camber ratios (m = 1.0% to 5.0% in 0.5% increments, chord c = 1.0 m, t = 12%) and 9 angles of attack (alpha = -2° to +14° in 2° increments) at Uinf = 45 m/s (Re ≈ 3.0 × 10^6). From the 81 converged simulations, I extracted Cl, Cd, Cm, and L/D. In ml/, I trained and benchmarked multiple surrogate architectures (Gaussian Process Regression, MLPs, XGBoost, Random Forests) using 5-fold cross-validation. The Matérn-kernel Gaussian Process achieved R² = 0.9992 and an RMSE of 0.0062 for Cl, reproducing the linear lift slope, stall onset, and drag polar curves with sub-millisecond query times."
       },
       {
-        "title": "Gaussian Process Regression (GPR) Surrogate",
-        "content": "Trained a multi-output Gaussian Process Regression (GPR) surrogate on the extracted CFD dataset. The surrogate model delivers instant, millisecond-level aerodynamic coefficient inference for any arbitrary camber and AoA combination within the design envelope, achieving a cross-validated coefficient of determination R\u00b2 > 0.997 across all test partitions."
+        "title": "Physics-Informed Neural Network (PINN) Flow Field Surrogate",
+        "content": "To extend beyond point force prediction to full continuous flow field reconstruction, I formulated and trained a Parametric Physics-Informed Neural Network (pinn_study/) coupled directly to OpenFOAM cell-center solutions. The neural network maps spatial coordinates, camber percentage, and angle of attack (x, y, m, alpha) to velocity (u, v), kinematic pressure p, and kinematic eddy viscosity nu_t. To resolve sharp boundary layer gradients and overcome standard MLP spectral bias, the architecture uses random Fourier feature spatial embeddings coupled with residual blocks and smooth C² activations. The composite loss enforces supervised cell-center CFD observations, automatic differentiation-based steady incompressible Navier-Stokes continuity and momentum residuals, and airfoil wall no-slip boundary conditions."
+      },
+      {
+        "title": "PINN Validation & 12,000x Inference Acceleration",
+        "content": "I evaluated the trained PINN against 20 strictly held-out OpenFOAM test cases (alpha in {0°, 4°, 8°, 12°} across all 5 camber values). The network achieved an overall mean relative L2 velocity error of 11.08% and MAE of 2.58 m/s across the 45 m/s freestream, matching OpenFOAM CL with differences as low as Delta CL = -0.0076 in the linear aerodynamic regime. In evaluation, full continuous 2D flow fields evaluate in under 5 ms on a single GPU — delivering over 12,000x speedup compared to iterative OpenFOAM meshing and solver convergence."
       }
     ],
-    "links": {},
+    "links": {
+      "github": "https://github.com/Omar-elmetwalli/openfoam-airfoil-study",
+      "paper": "/files/airfoil_study_paper.pdf",
+      "paperTitle": "Read CFD & Surrogate Paper (PDF)",
+      "report": "/files/PINN_OpenFOAM_Airfoil_Report.pdf",
+      "reportTitle": "Read PINN Research Report (PDF)"
+    },
     "gallery": [
+      "/images/projects/openfoam-airfoil-study/aerodynamic_polars_comparison.png",
+      "/images/projects/openfoam-airfoil-study/velocity_field_comparison_m2.0_AoA4.png",
+      "/images/projects/openfoam-airfoil-study/pressure_field_comparison_m2.0_AoA4.png",
+      "/images/projects/openfoam-airfoil-study/training_convergence.png",
+      "/images/projects/openfoam-airfoil-study/parity_plots.png",
+      "/images/projects/openfoam-airfoil-study/ml_vs_cfd_drag_polar.png",
+      "/images/projects/openfoam-airfoil-study/ml_vs_cfd_cl_vs_aoa.png",
       "/images/projects/openfoam-airfoil-study/cl_vs_aoa.png",
       "/images/projects/openfoam-airfoil-study/cd_vs_aoa.png",
-      "/images/projects/openfoam-airfoil-study/cm_vs_aoa.png",
-      "/images/projects/openfoam-airfoil-study/cl_vs_cd_polar.png"
+      "/images/projects/openfoam-airfoil-study/cm_vs_aoa.png"
     ]
   },
   {
