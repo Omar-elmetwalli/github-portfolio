@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Navbar from "@/components/Navbar";
+import OnePageNav from "@/components/OnePageNav";
 import Footer from "@/components/Footer";
 import { profile } from "../../data/profile";
 
@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <ThemeProvider>
           <div className="min-h-screen flex flex-col">
-            <Navbar />
+            <OnePageNav />
             <main className="flex-grow">{children}</main>
             <Footer />
           </div>
