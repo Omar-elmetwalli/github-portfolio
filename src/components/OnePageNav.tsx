@@ -6,23 +6,24 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
 import { profile } from "../../data/profile";
 import { navSections } from "@/lib/nav";
+import { OPEN_PALETTE_EVENT } from "./CommandPalette";
+import { IconMoon, IconSearch, IconSun } from "./Icons";
 
 export default function OnePageNav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const { theme, toggleTheme, mounted } = useTheme();
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Highlight the section currently in view (home page only).
   useEffect(() => {
     if (!isHome) return;
     const observer = new IntersectionObserver(
@@ -30,7 +31,7 @@ export default function OnePageNav() {
         const visible = entries.filter((e) => e.isIntersecting);
         if (visible.length) setActiveSection(visible[0].target.id);
       },
-      { rootMargin: "-40% 0px -55% 0px" }
+      { rootMargin: "-35% 0px -60% 0px" }
     );
     navSections.forEach(({ id }) => {
       const el = document.getElementById(id);
@@ -41,130 +42,107 @@ export default function OnePageNav() {
 
   const isDark = mounted ? theme === "dark" : true;
   const themeLabel = isDark ? "Switch to light theme" : "Switch to dark theme";
-  const cvActive = pathname.startsWith("/cv");
+  const openPalette = () => {
+    setMenuOpen(false);
+    window.dispatchEvent(new Event(OPEN_PALETTE_EVENT));
+  };
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || mobileMenuOpen
-          ? "bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-cyan-500/10 shadow-lg shadow-black/5"
-          : "bg-transparent border-b border-transparent"
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        scrolled || menuOpen ? "border-b border-line bg-bg/85 backdrop-blur-xl" : "border-b border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
-          <Link href="/" className="flex items-center gap-2 group rounded-xl" aria-label={`${profile.name}, home`}>
-            <span
-              aria-hidden="true"
-              className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-0.5 shadow-md shadow-blue-500/20"
-            >
-              <span className="w-full h-full bg-white dark:bg-gray-950 rounded-[10px] flex items-center justify-center font-black text-blue-700 dark:text-cyan-300 text-sm font-display">
-                OE
-              </span>
-            </span>
-            <span>
-              <span className="block font-bold text-base sm:text-lg text-gray-900 dark:text-white font-display">
-                {profile.name}
-              </span>
-              <span className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 leading-none">
-                Aerospace & Scientific ML
-              </span>
-            </span>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center gap-2.5 rounded-md" aria-label={`${profile.name}, home`}>
+          <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center rounded-md border border-line-strong font-mono text-xs font-semibold text-accent">
+            OE
+          </span>
+          <span className="hidden font-display text-[15px] font-semibold text-ink sm:block">{profile.name}</span>
+        </Link>
+
+        <nav aria-label="Main" className="hidden xl:block">
+          <ul className="flex items-center gap-1">
+            {navSections.map((s) => {
+              const active = isHome && activeSection === s.id;
+              return (
+                <li key={s.id}>
+                  <Link
+                    href={`/#${s.id}`}
+                    aria-current={active ? "true" : undefined}
+                    className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+                      active ? "bg-accent-soft font-medium text-accent" : "text-muted hover:text-ink"
+                    }`}
+                  >
+                    {s.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={openPalette}
+            className="flex items-center gap-2 rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-subtle hover:border-line-strong hover:text-ink"
+            aria-label="Search (Ctrl+K)"
+          >
+            <IconSearch className="h-4 w-4" />
+            <span className="hidden md:inline">Search</span>
+            <kbd className="hidden rounded border border-line px-1 font-mono text-[10px] md:inline">⌘K</kbd>
+          </button>
+          <Link
+            href="/cv/"
+            aria-current={pathname.startsWith("/cv") ? "page" : undefined}
+            className="hidden rounded-md bg-ink px-3 py-1.5 text-sm font-medium text-bg hover:opacity-90 sm:inline-block"
+          >
+            CV
           </Link>
-
-          <nav aria-label="Main" className="hidden lg:block">
-            <ul className="flex items-center gap-1 p-1.5 rounded-full bg-gray-100/70 dark:bg-gray-900/70 backdrop-blur-md border border-gray-200/60 dark:border-gray-800/80">
-              {navSections.map((sec) => {
-                const isActive = isHome && activeSection === sec.id;
-                return (
-                  <li key={sec.id}>
-                    <Link
-                      href={`/#${sec.id}`}
-                      aria-current={isActive ? "true" : undefined}
-                      className={`block px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                        isActive
-                          ? "bg-blue-700 text-white shadow-md shadow-blue-500/30"
-                          : "text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white"
-                      }`}
-                    >
-                      {sec.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              href="/cv/"
-              aria-current={cvActive ? "page" : undefined}
-              className="hidden sm:inline-flex items-center px-4 py-2 text-xs font-semibold rounded-xl bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors border border-gray-800 dark:border-gray-700 shadow-sm"
-            >
-              CV
-            </Link>
-
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label={themeLabel}
-              title={themeLabel}
-            >
-              {isDark ? (
-                <svg aria-hidden="true" className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg aria-hidden="true" className="w-5 h-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((open) => !open)}
-              className="lg:hidden p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              <svg aria-hidden="true" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={themeLabel}
+            title={themeLabel}
+            className="rounded-md p-2 text-muted hover:bg-surface-2 hover:text-ink"
+          >
+            {isDark ? <IconSun className="h-[18px] w-[18px]" /> : <IconMoon className="h-[18px] w-[18px]" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            className="rounded-md p-2 text-muted hover:bg-surface-2 hover:text-ink xl:hidden"
+          >
+            <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              {menuOpen ? <path strokeLinecap="round" d="M6 18 18 6M6 6l12 12" /> : <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
         </div>
       </div>
 
-      {mobileMenuOpen && (
-        <nav
-          id="mobile-menu"
-          aria-label="Main"
-          className="lg:hidden border-t border-gray-200 dark:border-gray-800 px-4 py-4"
-        >
-          <ul className="space-y-1">
-            {navSections.map((sec) => (
-              <li key={sec.id}>
+      {menuOpen && (
+        <nav id="mobile-menu" aria-label="Main" className="border-t border-line bg-bg px-4 pb-5 pt-2 xl:hidden">
+          <ul className="grid grid-cols-2 gap-1">
+            {navSections.map((s) => (
+              <li key={s.id}>
                 <Link
-                  href={`/#${sec.id}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  href={`/#${s.id}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-2"
                 >
-                  {sec.label}
+                  {s.label}
                 </Link>
               </li>
             ))}
-            <li className="pt-3 mt-2 border-t border-gray-200 dark:border-gray-800">
+            <li className="col-span-2 mt-2">
               <Link
                 href="/cv/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-center py-2.5 rounded-xl text-sm font-semibold bg-gray-900 dark:bg-gray-800 text-white"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-md bg-ink py-2.5 text-center text-sm font-semibold text-bg"
               >
                 CV
               </Link>

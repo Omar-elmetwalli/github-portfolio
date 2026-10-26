@@ -54,19 +54,18 @@ export default function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <dl ref={containerRef} className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 my-12">
+    <dl ref={containerRef} className="grid grid-cols-2 border-y border-line lg:grid-cols-4">
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="glass-panel p-5 rounded-2xl relative overflow-hidden text-left flex flex-col"
+          className="flex flex-col border-line px-4 py-5 text-left even:border-l lg:border-l lg:first:border-l-0 [&:nth-child(n+3)]:border-t lg:[&:nth-child(n+3)]:border-t-0"
         >
-          <div aria-hidden="true" className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-70" />
-          <dt className="order-2 text-sm font-semibold text-gray-800 dark:text-gray-200 mt-1">{stat.label}</dt>
-          <dd className="order-1 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight font-mono tabular-nums">
+          <dt className="order-2 mt-1 text-sm font-medium text-ink">{stat.label}</dt>
+          <dd className="order-1 font-mono text-3xl font-semibold tracking-tight text-ink tabular-nums md:text-4xl">
             {format(stat.value * progress, stat.decimals)}
-            {stat.suffix && <span className="text-blue-700 dark:text-cyan-300 text-2xl ml-0.5">{stat.suffix}</span>}
+            {stat.suffix && <span className="text-accent text-2xl ml-0.5">{stat.suffix}</span>}
           </dd>
-          <dd className="order-3 text-xs text-gray-600 dark:text-gray-400 mt-0.5">{stat.sublabel}</dd>
+          <dd className="order-3 text-xs text-subtle mt-0.5">{stat.sublabel}</dd>
         </div>
       ))}
     </dl>

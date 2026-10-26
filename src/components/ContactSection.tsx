@@ -83,8 +83,8 @@ export default function ContactSection() {
   };
 
   const inputClass = (key: keyof Fields) =>
-    `w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-gray-800/60 text-gray-900 dark:text-white text-sm placeholder-gray-500 dark:placeholder-gray-400 ${
-      errors[key] ? "border-red-600 dark:border-red-400" : "border-gray-300 dark:border-gray-700"
+    `w-full px-4 py-2.5 rounded-xl border bg-surface text-ink text-sm placeholder:text-subtle ${
+      errors[key] ? "border-red-600 dark:border-red-400" : "border-line-strong"
     }`;
 
   const fieldError = (key: keyof Fields) =>
@@ -97,10 +97,10 @@ export default function ContactSection() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <div className="lg:col-span-5">
-        <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border border-gray-200 dark:border-cyan-500/20">
+        <div className="card p-6 sm:p-8 rounded-xl space-y-6 border border-line">
           <div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-display">Let&apos;s connect</h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            <h3 className="text-xl font-bold text-ink mb-2 font-display">Let&apos;s connect</h3>
+            <p className="text-sm text-muted leading-relaxed">
               Open to PhD positions, research collaborations in CFD and scientific machine learning, and aerospace R&D roles.
             </p>
           </div>
@@ -113,31 +113,31 @@ export default function ContactSection() {
             ].map((item) => (
               <li
                 key={item.value}
-                className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80 flex items-center justify-between gap-3"
+                className="p-4 rounded-lg bg-surface-2 border border-line flex items-center justify-between gap-3"
               >
                 <div className="min-w-0">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-subtle">
                     {item.label}
                   </span>
-                  <a href={item.href} className="text-sm font-semibold text-gray-900 dark:text-white break-all hover:underline">
+                  <a href={item.href} className="text-sm font-semibold text-ink break-all hover:underline">
                     {item.value}
                   </a>
                 </div>
                 <button
                   type="button"
                   onClick={() => copy(item.value)}
-                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 flex-shrink-0"
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-surface-2 text-ink hover:bg-line flex-shrink-0"
                 >
                   {copied === item.value ? "Copied ✓" : "Copy"}
                   <span className="sr-only"> {item.label}</span>
                 </button>
               </li>
             ))}
-            <li className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+            <li className="p-4 rounded-lg bg-surface-2 border border-line">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-subtle">
                 Affiliation
               </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">{profile.affiliation.location}</span>
+              <span className="text-sm font-semibold text-ink">{profile.affiliation.location}</span>
             </li>
           </ul>
 
@@ -154,7 +154,7 @@ export default function ContactSection() {
               href={profile.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700"
+              className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-ink text-bg hover:opacity-90"
             >
               GitHub
             </a>
@@ -167,9 +167,9 @@ export default function ContactSection() {
           onSubmit={handleSubmit}
           noValidate
           aria-labelledby="contact-form-title"
-          className="glass-panel p-6 sm:p-8 rounded-3xl border border-gray-200 dark:border-cyan-500/20 space-y-4"
+          className="card p-6 sm:p-8 rounded-xl border border-line space-y-4"
         >
-          <h3 id="contact-form-title" className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-display">
+          <h3 id="contact-form-title" className="text-xl font-bold text-ink mb-2 font-display">
             Send a message
           </h3>
 
@@ -178,7 +178,7 @@ export default function ContactSection() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="contact-name" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
+              <label htmlFor="contact-name" className="block text-xs font-semibold text-ink mb-1.5">
                 Your name
               </label>
               <input
@@ -194,7 +194,7 @@ export default function ContactSection() {
               {fieldError("name")}
             </div>
             <div>
-              <label htmlFor="contact-email" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
+              <label htmlFor="contact-email" className="block text-xs font-semibold text-ink mb-1.5">
                 Your email
               </label>
               <input
@@ -213,14 +213,14 @@ export default function ContactSection() {
           </div>
 
           <div>
-            <label htmlFor="contact-subject" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
-              Subject <span className="font-normal text-gray-600 dark:text-gray-400">(optional)</span>
+            <label htmlFor="contact-subject" className="block text-xs font-semibold text-ink mb-1.5">
+              Subject <span className="font-normal text-subtle">(optional)</span>
             </label>
             <input id="contact-subject" type="text" value={fields.subject} onChange={update("subject")} className={inputClass("subject")} />
           </div>
 
           <div>
-            <label htmlFor="contact-message" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
+            <label htmlFor="contact-message" className="block text-xs font-semibold text-ink mb-1.5">
               Message
             </label>
             <textarea
@@ -239,14 +239,14 @@ export default function ContactSection() {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 disabled:opacity-60 text-white font-bold text-sm transition-colors"
+              className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-strong disabled:opacity-60 text-on-accent font-bold text-sm transition-colors"
             >
               {status === "sending" ? "Sending…" : FORM_KEY ? "Send message" : "Open in email app"}
             </button>
 
             <p role="status" aria-live="polite" className="text-sm font-medium">
               {status === "success" && (
-                <span className="text-emerald-800 dark:text-emerald-300">Thanks! Your message was sent.</span>
+                <span className="text-good">Thanks! Your message was sent.</span>
               )}
               {status === "error" && (
                 <span className="text-red-700 dark:text-red-300">

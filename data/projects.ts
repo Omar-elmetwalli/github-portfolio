@@ -23,6 +23,8 @@ export interface Project {
   tags: string[];
   tools: string[];
   summary: string;
+  /** Shown large in "Selected research" on the home page. */
+  featured?: boolean;
   confidential?: boolean;
   /** Shown instead of summary/sections when confidential is true. */
   publicSummary?: string;
@@ -41,6 +43,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     "slug": "ml-augmented-turbulence-modeling",
+    "featured": true,
     "categories": ["Scientific ML","Fluid Mechanics & CFD"],
     "title": "Physics-Informed Deep Learning & Neural Operators for Multiscale Turbulence Modeling",
     "date": "2024 \u2014 Present",
@@ -91,6 +94,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "openfoam-parametric-airfoil-study",
+    "featured": true,
     "categories": ["Scientific ML","Fluid Mechanics & CFD","Aerodynamics & Propulsion"],
     "title": "Parametric NACA Airfoil OpenFOAM CFD Study, GPR Surrogates & Physics-Informed Neural Networks (PINN)",
     "date": "2024-11 — Present",
@@ -126,7 +130,7 @@ export const projects: Project[] = [
       },
       {
         "title": "Aerodynamic Sweep & Gaussian Process Surrogate",
-        "content": "I conducted sweeps across 9 camber ratios (m = 1.0% to 5.0% in 0.5% increments, chord c = 1.0 m, t = 12%) and 9 angles of attack (alpha = -2° to +14° in 2° increments) at Uinf = 45 m/s (Re ≈ 3.0 × 10^6). From the 81 converged simulations, I extracted Cl, Cd, Cm, and L/D. In ml/, I trained and benchmarked multiple surrogate architectures (Gaussian Process Regression, MLPs, XGBoost, Random Forests) using 5-fold cross-validation. The Matérn-kernel Gaussian Process achieved R² = 0.9992 and an RMSE of 0.0062 for Cl, reproducing the linear lift slope, stall onset, and drag polar curves with sub-millisecond query times."
+        "content": "I conducted sweeps across 9 camber ratios (m = 1.0% to 5.0% in 0.5% increments, chord c = 1.0 m, t = 12%) and 9 angles of attack (alpha = -2° to +14° in 2° increments) at Uinf = 45 m/s ($Re \\approx 3.0 \\times 10^6$). From the 81 converged simulations, I extracted Cl, Cd, Cm, and L/D. In ml/, I trained and benchmarked multiple surrogate architectures (Gaussian Process Regression, MLPs, XGBoost, Random Forests) using 5-fold cross-validation. The Matérn-kernel Gaussian Process achieved R² = 0.9992 and an RMSE of 0.0062 for Cl, reproducing the linear lift slope, stall onset, and drag polar curves with sub-millisecond query times."
       },
       {
         "title": "Physics-Informed Neural Network (PINN) Flow Field Surrogate",
@@ -182,11 +186,11 @@ export const projects: Project[] = [
       },
       {
         "title": "Longitudinal & Lateral Modal Analysis",
-        "content": "Constructed the 4x4 longitudinal state-space matrix (u, w, q, theta) and extracted eigenvalues to reveal the fast, well-damped Short-Period pitching mode (omega_n = 0.997 rad/s, zeta = 0.421, Ts = 9.52 s) and slow, lightly damped Phugoid energy exchange mode (omega_n = 0.0878 rad/s, zeta = 0.047, Ts = 970 s). Formulated the 4x4 lateral-directional state-space model (v, p, r, phi) and computed the heavily convergent Roll Subsidence mode (tau = 0.861 s), lightly damped Dutch Roll oscillation (omega_n = 1.513 rad/s, zeta = 0.0387), and slow Spiral mode (tau = 238.1 s). Evaluated compliance against MIL-F-8785C criteria, showing unaugmented Dutch roll damping falls well below the 0.08 minimum, confirming the need for stability augmentation."
+        "content": "Constructed the 4x4 longitudinal state-space matrix (u, w, q, theta) and extracted eigenvalues to reveal the fast, well-damped Short-Period pitching mode ($\\omega_n$ = 0.997 rad/s, $\\zeta$ = 0.421, Ts = 9.52 s) and slow, lightly damped Phugoid energy exchange mode ($\\omega_n$ = 0.0878 rad/s, $\\zeta$ = 0.047, Ts = 970 s). Formulated the 4x4 lateral-directional state-space model (v, p, r, phi) and computed the heavily convergent Roll Subsidence mode ($\\tau$ = 0.861 s), lightly damped Dutch Roll oscillation ($\\omega_n$ = 1.513 rad/s, $\\zeta$ = 0.0387), and slow Spiral mode ($\\tau$ = 238.1 s). Evaluated compliance against MIL-F-8785C criteria, showing unaugmented Dutch roll damping falls well below the 0.08 minimum, confirming the need for stability augmentation."
       },
       {
         "title": "Full-System vs. Reduced-Order Approximations",
-        "content": "Formulated 2x2 reduced-order approximations for Short-Period (w, q), Phugoid (u, theta), and Dutch Roll (v, r), plus 1st-order models for Rolling and Spiral modes. Simulated responses under a 1-degree angle-of-attack gust disturbance and elevator/rudder step inputs. Short-period approximation tracked the initial 10 seconds of response with high fidelity, while Dutch roll approximation captured frequency accurately but overestimated damping ratio (zeta = 0.0883 vs. 0.0387) due to omitted roll-rate cross-coupling relief."
+        "content": "Formulated 2x2 reduced-order approximations for Short-Period (w, q), Phugoid (u, theta), and Dutch Roll (v, r), plus 1st-order models for Rolling and Spiral modes. Simulated responses under a 1-degree angle-of-attack gust disturbance and elevator/rudder step inputs. Short-period approximation tracked the initial 10 seconds of response with high fidelity, while Dutch roll approximation captured frequency accurately but overestimated damping ratio ($\\zeta$ = 0.0883 vs. 0.0387) due to omitted roll-rate cross-coupling relief."
       },
       {
         "title": "Classical Longitudinal & Lateral Autopilot Design",
@@ -202,6 +206,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "joukowski-airfoil-aerodynamics",
+    "featured": true,
     "categories": ["Aerodynamics & Propulsion","Fluid Mechanics & CFD"],
     "title": "Joukowski Airfoil Aerodynamics \u2014 Conformal Mapping Potential Flow vs. CFD",
     "date": "2025-11",
@@ -224,7 +229,7 @@ export const projects: Project[] = [
       },
       {
         "title": "Analytical Velocity & Pressure Evaluation",
-        "content": "Derived closed-form expressions for upper and lower surface tangential velocities Vu(theta) and Vl(theta) as functions of cylinder angle. Computed non-dimensional pressure coefficient distributions Cp = 1 - (V/V_inf)^2. Implemented numerical contour integration along upper and lower surfaces to determine sectional lift coefficient (CL), quarter-chord pitching moment (Cm,c/4), and leading-edge moment (Cm,LE) across an alpha sweep from -5 deg to 10 deg."
+        "content": "Derived closed-form expressions for upper and lower surface tangential velocities $V_u(\\theta)$ and $V_l(\\theta)$ as functions of cylinder angle. Computed non-dimensional pressure coefficient distributions $C_p = 1 - (V/V_\\infty)^2$. Implemented numerical contour integration along upper and lower surfaces to determine sectional lift coefficient (CL), quarter-chord pitching moment ($C_{m,c/4}$), and leading-edge moment ($C_{m,LE}$) across an alpha sweep from -5 deg to 10 deg."
       },
       {
         "title": "CFD Benchmark & Aerodynamic Correlation",
@@ -259,7 +264,7 @@ export const projects: Project[] = [
     "sections": [
       {
         "title": "Computational Setup & Mesh Inflation",
-        "content": "Modeled a circular pipe (diameter D = 1 m, lengths L = 20 m and 30 m) under uniform inlet velocity (1 m/s, Re = 10^6) with 4.8% inlet turbulence intensity. Generated a fine 2D axisymmetric grid with 100 axial divisions and 50 radial divisions, applying a 10.0 bias factor toward the pipe wall to properly resolve the near-wall laminar sublayer (y+ <= 1)."
+        "content": "Modeled a circular pipe (diameter D = 1 m, lengths L = 20 m and 30 m) under uniform inlet velocity (1 m/s, $Re = 10^6$) with 4.8% inlet turbulence intensity. Generated a fine 2D axisymmetric grid with 100 axial divisions and 50 radial divisions, applying a 10.0 bias factor toward the pipe wall to properly resolve the near-wall laminar sublayer (y+ <= 1)."
       },
       {
         "title": "Turbulence Closure & Solver Selection",
@@ -307,7 +312,7 @@ export const projects: Project[] = [
       },
       {
         "title": "Results",
-        "content": "Design point: P0,d = 100 bar, T0,d = 2200 K, perfect expansion to ambient. Tank initial: Pt,0 = 200 bar, Tt,0 = 300 K, Vt = 0.5 m^3, working gas: air. Final nozzle sizing: Dt = 20.0 mm, Me = 3.68, Ae/At = 8.05, De = 56.7 mm, Design thrust \u2248 4865 N (\u2248 4.87 kN)."
+        "content": "Design point: P0,d = 100 bar, T0,d = 2200 K, perfect expansion to ambient. Tank initial: Pt,0 = 200 bar, Tt,0 = 300 K, Vt = 0.5 m^3, working gas: air. Final nozzle sizing: Dt = 20.0 mm, $M_e = 3.68$, $A_e/A_t = 8.05$, De = 56.7 mm, Design thrust \u2248 4865 N (\u2248 4.87 kN)."
       }
     ],
     "links": {
@@ -347,7 +352,7 @@ export const projects: Project[] = [
       },
       {
         "title": "Results",
-        "content": "Optimized ramp angles to theta1 = 14.5 deg and theta2 = 17.5 deg, achieving intake total-pressure recovery Pt3/Pt0 = 0.8086 (~81%). At the Mach 2.75 design point the engine produced ~6.26 kN net thrust (m_dot = 9.88 kg/s; specific thrust = 633 N/(kg/s)) within the 25x25 cm envelope (At = 0.0562 m^2, Ae = 0.0625 m^2). Off-design analysis showed unstart at Mach 2.0 and strong high-speed potential at Mach 4.0 reaching 13.67 kN maximum net thrust at Tt5 = 2200 K."
+        "content": "Optimized ramp angles to $\\theta_1 = 14.5^\\circ$ and $\\theta_2 = 17.5^\\circ$, achieving intake total-pressure recovery $P_{t3}/P_{t0} = 0.8086$ (~81%). At the Mach 2.75 design point the engine produced ~6.26 kN net thrust (m_dot = 9.88 kg/s; specific thrust = 633 N/(kg/s)) within the 25x25 cm envelope (At = 0.0562 m^2, Ae = 0.0625 m^2). Off-design analysis showed unstart at Mach 2.0 and strong high-speed potential at Mach 4.0 reaching 13.67 kN maximum net thrust at Tt5 = 2200 K."
       }
     ],
     "links": {
@@ -464,7 +469,7 @@ export const projects: Project[] = [
       },
       {
         "title": "CAD Drawings & Experimental Validation",
-        "content": "Generated multi-view engineering drawings (Front, Side, Top views) with full piping schematics and conducted fluid viscometer experiments for fluid property characterization, accompanied by comprehensive economic analysis totaling \u2248 $1900."
+        "content": "Generated multi-view engineering drawings (Front, Side, Top views) with full piping schematics and conducted fluid viscometer experiments for fluid property characterization, accompanied by comprehensive economic analysis totaling \u2248 \\$1900."
       }
     ],
     "links": {
@@ -602,15 +607,15 @@ export const projects: Project[] = [
       "Simulink",
       "Control System Toolbox"
     ],
-    "summary": "Derived equations of motion for an unstable inverted pendulum Segway vehicle G(s) = -0.1533/(s^2 - 11.841), designed Root Locus pole-placement feedback compensation to achieve target damping zeta = 0.451 and natural frequency omega_n = 21.9 rad/s, and validated stability in Simulink.",
+    "summary": "Derived equations of motion for an unstable inverted pendulum Segway vehicle G(s) = -0.1533/(s^2 - 11.841), designed Root Locus pole-placement feedback compensation to achieve target damping $\\zeta$ = 0.451 and natural frequency $\\omega_n$ = 21.9 rad/s, and validated stability in Simulink.",
     "sections": [
       {
         "title": "Dynamical Modeling & Open-Loop Instability",
-        "content": "Formulated linearized equations of motion for the mobile two-wheeled inverted pendulum cart-pendulum system. Identified the open-loop unstable right-half-plane pole pair at s = +-3.441 rad/s resulting from gravitational destabilization."
+        "content": "Formulated linearized equations of motion for the mobile two-wheeled inverted pendulum cart-pendulum system. Identified the open-loop unstable right-half-plane pole pair at $s = \\pm 3.441$ rad/s resulting from gravitational destabilization."
       },
       {
         "title": "Root Locus Compensation & Gain Calculation",
-        "content": "Plotted root locus in MATLAB and synthesized a feedback compensator placing closed-loop poles at desired locations s0 = -10 +- 19.5j, achieving damping ratio zeta = 0.451 and rapid settling. Computed exact critical gain Ku = 1/|G(s0)| and verified pole stability."
+        "content": "Plotted root locus in MATLAB and synthesized a feedback compensator placing closed-loop poles at desired locations $s_0 = -10 \\pm 19.5j$, achieving damping ratio $\\zeta$ = 0.451 and rapid settling. Computed exact critical gain $K_u = 1/|G(s_0)|$ and verified pole stability."
       },
       {
         "title": "Simulink Dynamic Validation",
@@ -711,7 +716,7 @@ export const projects: Project[] = [
     "sections": [
       {
         "title": "Aerodynamic Sizing & Wing Geometry",
-        "content": "Sized high-aspect-ratio rectangular wing with polyhedral tip angles to ensure passive roll stability and Dutch roll damping during unguided free flight at low Reynolds numbers (Re < 10^5)."
+        "content": "Sized high-aspect-ratio rectangular wing with polyhedral tip angles to ensure passive roll stability and Dutch roll damping during unguided free flight at low Reynolds numbers ($Re < 10^5$)."
       },
       {
         "title": "Airframe Construction & Balances",

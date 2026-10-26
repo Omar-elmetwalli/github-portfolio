@@ -4,6 +4,9 @@ import "./globals.css";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 import OnePageNav from "@/components/OnePageNav";
 import Footer from "@/components/Footer";
+import CommandPalette from "@/components/CommandPalette";
+import RevealObserver from "@/components/RevealObserver";
+import { getPaletteItems } from "@/lib/palette";
 import { profile } from "../../data/profile";
 import { SITE_URL, absoluteUrl } from "@/lib/site";
 import { ogImagePath, ogSize } from "@/lib/og";
@@ -42,8 +45,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-    { media: "(prefers-color-scheme: dark)", color: "#030712" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f8fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#070b12" },
   ],
 };
 
@@ -65,10 +68,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }}
         />
       </head>
-      <body className="font-sans antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <body className="bg-bg font-sans text-ink antialiased">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-blue-700 focus:text-white focus:font-semibold"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-accent focus:text-on-accent focus:font-semibold"
         >
           Skip to content
         </a>
@@ -80,6 +83,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </main>
             <Footer />
           </div>
+          <CommandPalette items={getPaletteItems()} />
+          <RevealObserver />
         </ThemeProvider>
         {loadAnalytics && (
           // GoatCounter: cookie-free, privacy-friendly page counts. Production only.

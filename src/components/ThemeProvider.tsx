@@ -21,7 +21,7 @@ const ThemeContext = createContext<ThemeContextType>({
  * Runs in <head> before the page paints, so the right theme is applied on the
  * first frame (no flash). Keep it tiny and dependency-free.
  */
-export const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";var d=document.documentElement;d.classList.add(t);d.style.colorScheme=t}catch(e){document.documentElement.classList.add("dark")}})()`;
+export const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";var d=document.documentElement;d.classList.add(t,"js");d.style.colorScheme=t}catch(e){document.documentElement.classList.add("dark","js")}})()`;
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;

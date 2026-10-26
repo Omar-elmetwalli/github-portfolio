@@ -39,6 +39,37 @@ export const profile = {
     rest: ", multiscale turbulence modeling, high-fidelity CFD, and experimental PIV diagnostics.",
     sub: "Co-authoring research on ML-augmented turbulence with UT Dallas & Stevens Institute, investigating Keller–Segel PDE dynamics with Univ at Buffalo, incoming RA at AUC, and Founder & Chair of Egypt's first AIAA Student Branch.",
   },
+  /**
+   * Research-interest cards on the home page. `projects` are slugs shown as
+   * related work. TODO(Omar): review the wording; it is drafted from
+   * existing site content.
+   */
+  researchInterests: [
+    {
+      key: "closure",
+      title: "ML turbulence closure",
+      summary:
+        "Physics-constrained deep learning for turbulence: neural operators and 3D U-Nets trained on high-fidelity LES/DNS data, with conservation laws built into the architecture rather than learned.",
+      methods: ["Neural operators", "3D U-Nets", "JHTDB", "Wind-farm LES"],
+      projects: ["ml-augmented-turbulence-modeling"],
+    },
+    {
+      key: "surrogates",
+      title: "Surrogate & reduced-order models",
+      summary:
+        "Fast predictions of aerodynamic flows from parametric CFD databases: Gaussian-process surrogates for force coefficients and PINNs that reconstruct full flow fields in milliseconds.",
+      methods: ["OpenFOAM RANS", "GPR / Kriging", "PINNs"],
+      projects: ["openfoam-parametric-airfoil-study", "joukowski-airfoil-aerodynamics"],
+    },
+    {
+      key: "control",
+      title: "Flow control & diagnostics",
+      summary:
+        "Measuring and manipulating flows: PIV experiments for flow-field characterization, suction-based flow control in turbomachinery R&D (patent-pending), and classical control of flight vehicles.",
+      methods: ["PIV", "Suction devices", "State-space control"],
+      projects: ["boeing-747-flight-dynamics-autopilot", "turbulent-pipe-flow-cfd"],
+    },
+  ],
   /** About-section paragraphs. Use **bold** for emphasis. */
   bio: [
     "I am an aerospace engineering researcher at the intersection of **computational fluid dynamics** and **scientific machine learning**. My research investigates how physical conservation laws, vorticity dynamics, and Navier–Stokes residuals can constrain deep neural operators and PINNs to achieve physically consistent, fast aerodynamic predictions.",

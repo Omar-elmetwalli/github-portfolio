@@ -2,24 +2,122 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ------------------------------------------------------------------
+   Design tokens. One accent family (cyan/blue) plus neutrals.
+   Text colors are checked for >= 4.5:1 contrast on bg and surface.
+   ------------------------------------------------------------------ */
 :root {
-  --background: #fafafa;
-  --foreground: #09090b;
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef2f6;
+  --line: #dde3ea;
+  --line-strong: #c4ced9;
+  --ink: #0b1220;
+  --muted: #3f4b5c; /* 9.0:1 on surface */
+  --subtle: #5b6778; /* 5.7:1 on surface, 5.3:1 on bg */
+  --accent: #0e7490; /* cyan-700, 5.4:1 on white */
+  --accent-strong: #155e75;
+  --accent-soft: #e6f6fa;
+  --on-accent: #ffffff;
+  --accent-2: #1d4ed8;
+  --warm: #b45309;
+  --warm-soft: #fdf3e2;
+  --good: #047857;
+  --good-soft: #e3f6ee;
+  --grid: rgb(14 116 144 / 0.06);
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.05), 0 1px 1px rgb(15 23 42 / 0.03);
+  --shadow-lift: 0 12px 28px -12px rgb(15 23 42 / 0.22), 0 2px 6px rgb(15 23 42 / 0.06);
 }
 
 .dark {
-  --background: #030712;
-  --foreground: #f9fafb;
+  --bg: #070b12;
+  --surface: #0c121c;
+  --surface-2: #121a27;
+  --line: #1c2636;
+  --line-strong: #2a3850;
+  --ink: #e8eef6;
+  --muted: #b3c0d0; /* 10:1 */
+  --subtle: #8a9ab0; /* 6.4:1 on surface */
+  --accent: #22d3ee;
+  --accent-strong: #67e8f9;
+  --accent-soft: rgb(34 211 238 / 0.1);
+  --on-accent: #04141a;
+  --accent-2: #60a5fa;
+  --warm: #fbbf24;
+  --warm-soft: rgb(251 191 36 / 0.1);
+  --good: #34d399;
+  --good-soft: rgb(52 211 153 / 0.1);
+  --grid: rgb(34 211 238 / 0.05);
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-lift: 0 16px 32px -16px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(34 211 238 / 0.12);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-accent-2: var(--accent-2);
+  --color-warm: var(--warm);
+  --color-warm-soft: var(--warm-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+
   --animate-fade-in: fade-in 0.2s ease-out both;
   --animate-scale-up: scale-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Type scale (fluid). */
+@utility text-display {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+@utility text-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+@utility text-h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+@utility text-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
 @keyframes fade-in {
@@ -34,26 +132,86 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 /* Anchored sections land below the fixed header. */
 section[id] {
-  scroll-margin-top: 5rem;
-}
-
-h1, h2, h3 {
-  font-family: var(--font-display);
+  scroll-margin-top: 4.5rem;
 }
 
 /* Visible keyboard focus everywhere. */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-.dark :focus-visible {
-  outline-color: #67e8f9;
+/* Engineering-paper grid used behind the hero. */
+.paper-grid {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Cards: hover elevation. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.card-hover {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--line-strong);
+}
+
+/* Scroll reveal. Only hides content when JS is running (the html.js class),
+   so no-JS visitors and crawlers always see everything. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.js [data-reveal][data-revealed] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Long-form project text. */
+.prose-research p {
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 1.0625rem;
+}
+.prose-research .katex {
+  font-size: 1.05em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -67,107 +225,21 @@ h1, h2, h3 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  overflow-x: hidden;
-}
-
-/* Aerospace subtle background grid */
-.aerospace-grid {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-}
-
-.dark .aerospace-grid {
-  background-image: 
-    linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
-}
-
-/* Modern glassmorphism panel */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(229, 231, 235, 0.8);
-}
-
-.dark .glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.12);
-}
-
-/* Glowing cyber accent border */
-.glow-card {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glow-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px -10px rgba(56, 189, 248, 0.25);
-  border-color: rgba(56, 189, 248, 0.4);
-}
-
-/* Smooth keyframes */
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
   }
 }
 
-.animate-float {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 4s ease-in-out infinite;
-}
-
-/* Custom modern scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--line-strong);
   border-radius: 9999px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
 }

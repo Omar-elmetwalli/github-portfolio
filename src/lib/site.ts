@@ -20,9 +20,21 @@ export const isVideo = (src: string) => /\.(mp4|webm)$/i.test(src);
 export const imageSize = (src: string): { width?: number; height?: number } =>
   (media as Record<string, { width: number; height: number }>)[src] ?? {};
 
-/** Turns "/images/x/cl-vs-aoa.webp" into "Cl vs aoa". Used as fallback alt text. */
+const WORDS: Record<string, string> = {
+  cl: "Cl", cd: "Cd", cm: "Cm", cp: "Cp", aoa: "AoA", vs: "vs.", ml: "ML", cfd: "CFD", pinn: "PINN",
+  yplus: "y+", gui: "GUI", cad: "CAD", aiaa: "AIAA", fig04: "Fig. 4", sp: "short-period", q: "q",
+};
+
+/** Turns "/images/x/cl-vs-aoa.webp" into "Cl vs. AoA". Used as fallback captions and alt text. */
 export const describeFile = (src: string) => {
   const base = src.split("/").pop()?.replace(/\.[a-z0-9]+$/i, "") ?? "";
-  const words = base.replace(/[-_]+/g, " ").trim();
-  return words.charAt(0).toUpperCase() + words.slice(1);
+  const text = base
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((w) => WORDS[w.toLowerCase()] ?? w)
+    .join(" ")
+    .replace(/\bfigures? (\d+)\b/gi, "(Fig. $1)")
+    // OpenFOAM study files: "m2.0_AoA4" = camber m = 2.0 %, angle of attack 4°.
+    .replace(/\bm(\d) (\d) AoA(\d+)\b/i, "(camber m = $1.$2%, AoA = $3°)");
+  return text.charAt(0).toUpperCase() + text.slice(1);
 };
