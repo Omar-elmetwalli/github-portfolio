@@ -16,6 +16,9 @@ import { IconArrowRight, IconCap, IconDownload, IconTrophy } from "@/components/
 import { getProjectCards } from "@/lib/projects";
 import { asset } from "@/lib/site";
 import { scholarlyArticleJsonLd } from "@/lib/jsonld";
+import { aiEnabled } from "@/lib/aiConfig";
+import AskAiButton from "@/components/AskAiButton";
+import FitCheck from "@/components/FitCheck";
 
 const wrap = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 const section = "border-t border-line py-20 sm:py-24";
@@ -66,9 +69,13 @@ export default function Home() {
               >
                 <IconDownload className="h-4 w-4" /> Download CV
               </a>
-              <Link href="/#contact" className="inline-flex items-center px-3 py-3 text-sm font-semibold text-muted hover:text-ink">
-                Get in touch
-              </Link>
+              {aiEnabled ? (
+                <AskAiButton className="inline-flex items-center px-3 py-3 text-sm font-semibold text-accent hover:text-accent-strong" />
+              ) : (
+                <Link href="/#contact" className="inline-flex items-center px-3 py-3 text-sm font-semibold text-muted hover:text-ink">
+                  Get in touch
+                </Link>
+              )}
             </div>
           </div>
           <div className="lg:col-span-6">
@@ -244,6 +251,22 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Fit check (only when the AI worker is configured) */}
+      {aiEnabled && (
+        <section id="fit" aria-labelledby="fit-title" className={section}>
+          <div className={`${wrap} space-y-10`}>
+            <SectionHeading
+              id="fit"
+              index={num()}
+              eyebrow="For professors & recruiters"
+              title="Fit check"
+              intro="Paste a lab description or job posting to see which of Omar's projects and roles overlap with it most, with links to the details."
+            />
+            <FitCheck />
+          </div>
+        </section>
+      )}
 
       {/* Contact */}
       <section id="contact" aria-labelledby="contact-title" className={`${section} bg-surface`}>

@@ -68,6 +68,8 @@ jobs:
           # Set these under Settings -> Secrets and variables -> Actions -> Variables.
           NEXT_PUBLIC_WEB3FORMS_KEY: ${{ vars.NEXT_PUBLIC_WEB3FORMS_KEY }}
           NEXT_PUBLIC_GOATCOUNTER_CODE: ${{ vars.NEXT_PUBLIC_GOATCOUNTER_CODE }}
+          NEXT_PUBLIC_AI_ENDPOINT: ${{ vars.NEXT_PUBLIC_AI_ENDPOINT }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

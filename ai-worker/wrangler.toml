@@ -1,0 +1,35 @@
+# Cloudflare Worker that proxies the portfolio's AI features.
+# Deploy: see ai-worker/README.md. Secrets are set with `wrangler secret put`,
+# never in this file.
+name = "omar-portfolio-ai"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Provider and model. Provider: "gemini" | "anthropic" | "openai".
+# Checked against provider docs on 2026-10-26:
+#   gemini    -> gemini-3.5-flash-lite (cheap; minimal thinking by default) or gemini-3.8-flash
+#   anthropic -> claude-haiku-5-5
+#   openai    -> gpt-6-luna
+AI_PROVIDER = "gemini"
+AI_MODEL = "gemini-3.5-flash-lite"
+
+# Comma-separated list of origins allowed to call the worker.
+ALLOWED_ORIGINS = "https://omar-elmetwalli.github.io"
+
+# Where the site publishes its knowledge base (generated at build time).
+KNOWLEDGE_URL = "https://omar-elmetwalli.github.io/github-portfolio/ai/knowledge.json"
+
+# Abuse limits.
+RATE_LIMIT_PER_HOUR = "20"
+MAX_INPUT_CHARS = "1500"     # per chat message
+MAX_FIT_INPUT_CHARS = "6000" # pasted lab description / job posting
+MAX_OUTPUT_TOKENS = "1024"   # includes reasoning tokens on models that think
+
+# Per-IP request counter. Create it with:
+#   npx wrangler kv namespace create RATE_LIMIT
+# then paste the printed id below.
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"

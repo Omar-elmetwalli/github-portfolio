@@ -6,6 +6,7 @@ import OnePageNav from "@/components/OnePageNav";
 import Footer from "@/components/Footer";
 import CommandPalette from "@/components/CommandPalette";
 import RevealObserver from "@/components/RevealObserver";
+import ChatLauncher from "@/components/ChatLauncher";
 import { getPaletteItems } from "@/lib/palette";
 import { profile } from "../../data/profile";
 import { SITE_URL, absoluteUrl } from "@/lib/site";
@@ -85,6 +86,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </div>
           <CommandPalette items={getPaletteItems()} />
           <RevealObserver />
+          <ChatLauncher />
         </ThemeProvider>
         {loadAnalytics && (
           // GoatCounter: cookie-free, privacy-friendly page counts. Production only.

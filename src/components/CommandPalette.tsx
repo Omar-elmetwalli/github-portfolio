@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { asset } from "@/lib/site";
 import { IconSearch } from "./Icons";
+import { ASK_AI_EVENT, OPEN_PALETTE_EVENT } from "@/lib/events";
 
 export interface PaletteItem {
   id: string;
@@ -18,10 +19,6 @@ export interface PaletteItem {
   kind: "page" | "file" | "external";
 }
 
-/** Event other components dispatch to open the palette. */
-export const OPEN_PALETTE_EVENT = "palette:open";
-/** Event the palette dispatches to hand a question to the AI chat (Phase 3). */
-export const ASK_AI_EVENT = "ai:ask";
 
 /**
  * Subsequence fuzzy match. Higher is better; -1 means no match. Rewards

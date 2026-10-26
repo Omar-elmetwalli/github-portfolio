@@ -2,6 +2,7 @@
   "name": "omar-portfolio",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build && node scripts/fix-export-segments.mjs",
@@ -9,7 +10,10 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "preview": "node scripts/serve-export.mjs"
+    "preview": "node scripts/serve-export.mjs",
+    "ai:summaries": "node scripts/generate-summaries.ts",
+    "career": "node scripts/career-tools.ts",
+    "worker:test": "pnpm --dir ai-worker test"
   },
   "dependencies": {
     "katex": "^0.19.1",

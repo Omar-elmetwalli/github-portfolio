@@ -1,0 +1,14 @@
+# Copy to .dev.vars for `wrangler dev`. Never commit .dev.vars.
+GEMINI_API_KEY=
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
+
+# Random string, at least 32 characters. Signs short-lived session tokens.
+SESSION_SECRET=
+
+# Cloudflare Turnstile secret. Leave empty locally to skip bot checks.
+TURNSTILE_SECRET=
+
+# Local overrides.
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4173
+KNOWLEDGE_URL=http://localhost:4173/github-portfolio/ai/knowledge.json

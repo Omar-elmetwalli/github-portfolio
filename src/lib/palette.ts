@@ -3,6 +3,7 @@ import { resume } from "../../data/resume";
 import { getPublicProjects } from "../../data/projects";
 import type { PaletteItem } from "@/components/CommandPalette";
 import { navSections } from "./nav";
+import { aiEnabled } from "./aiConfig";
 
 /** Everything the command palette can jump to. Built on the server, sent as plain data. */
 export function getPaletteItems(): PaletteItem[] {
@@ -14,6 +15,9 @@ export function getPaletteItems(): PaletteItem[] {
       href: `/#${s.id}`,
       kind: "page" as const,
     })),
+    ...(aiEnabled
+      ? [{ id: "section-fit", group: "Sections" as const, label: "Fit check (paste a lab or job description)", keywords: "lab job posting match", href: "/#fit", kind: "page" as const }]
+      : []),
     ...getPublicProjects().map((p) => ({
       id: `project-${p.slug}`,
       group: "Projects" as const,

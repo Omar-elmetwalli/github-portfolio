@@ -48,3 +48,6 @@ next-env.d.ts
 
 # review screenshots (scripts/screenshots.mjs)
 /screenshots/
+
+# local career tool output (scripts/career-tools.ts)
+/career-output/

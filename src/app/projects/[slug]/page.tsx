@@ -10,6 +10,10 @@ import { IconArrowRight, IconCode, IconFile } from "@/components/Icons";
 import { absoluteUrl, asset, describeFile, imageSize, isVideo } from "@/lib/site";
 import { mathToPlain } from "@/lib/math";
 import { ogImagePath, ogSize } from "@/lib/og";
+import ExplainToggle from "@/components/ExplainToggle";
+import summaries from "../../../../data/summaries.json";
+
+const plainSummaries = summaries as Record<string, { text: string; reviewed: boolean }>;
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -157,37 +161,60 @@ export default async function ProjectPage({ params }: Params) {
           </aside>
 
           <div className="min-w-0 space-y-12 lg:col-span-9 xl:col-span-8">
-            <section id="overview" aria-labelledby="overview-title" className="space-y-4">
-              <h2 id="overview-title" className="text-h3 text-ink">
-                Overview
-              </h2>
-              <div className="prose-research">
-                <p>
-                  <MathText text={project.summary} />
-                </p>
-              </div>
-              <ul className="flex flex-wrap gap-1.5 lg:hidden" aria-label="Tools">
-                {project.tools.map((t) => (
-                  <li key={t} className="rounded-sm bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-muted">
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {(() => {
+              const technical = (
+                <>
+                <section id="overview" aria-labelledby="overview-title" className="space-y-4">
+                  <h2 id="overview-title" className="text-h3 text-ink">
+                    Overview
+                  </h2>
+                  <div className="prose-research">
+                    <p>
+                      <MathText text={project.summary} />
+                    </p>
+                  </div>
+                  <ul className="flex flex-wrap gap-1.5 lg:hidden" aria-label="Tools">
+                    {project.tools.map((t) => (
+                      <li key={t} className="rounded-sm bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-muted">
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
 
-            {project.sections.map((s, i) => (
-              <section key={s.title} id={anchor(s.title)} aria-labelledby={`${anchor(s.title)}-title`} className="space-y-3">
-                <h2 id={`${anchor(s.title)}-title`} className="flex items-baseline gap-3 text-h3 text-ink">
-                  <span className="font-mono text-sm text-subtle">{String(i + 1).padStart(2, "0")}</span>
-                  {s.title}
-                </h2>
-                <div className="prose-research">
-                  <p>
-                    <MathText text={s.content} />
-                  </p>
-                </div>
-              </section>
-            ))}
+                {project.sections.map((s, i) => (
+                  <section key={s.title} id={anchor(s.title)} aria-labelledby={`${anchor(s.title)}-title`} className="space-y-3">
+                    <h2 id={`${anchor(s.title)}-title`} className="flex items-baseline gap-3 text-h3 text-ink">
+                      <span className="font-mono text-sm text-subtle">{String(i + 1).padStart(2, "0")}</span>
+                      {s.title}
+                    </h2>
+                    <div className="prose-research">
+                      <p>
+                        <MathText text={s.content} />
+                      </p>
+                    </div>
+                  </section>
+                ))}
+                </>
+              );
+              const plain = plainSummaries[project.slug];
+              // Only reviewed summaries are published (see scripts/generate-summaries.ts).
+              if (!plain?.reviewed) return technical;
+              return (
+                <ExplainToggle
+                  overview={
+                    <section aria-label="Plain-language overview" className="prose-research space-y-4">
+                      {plain.text.split(/\n\s*\n/).map((para) => (
+                        <p key={para}>{para}</p>
+                      ))}
+                      <p className="text-sm text-subtle">Switch to Technical for methods, equations, and results.</p>
+                    </section>
+                  }
+                >
+                  <div className="space-y-12">{technical}</div>
+                </ExplainToggle>
+              );
+            })()}
 
             {project.gallery.length > 0 && (
               <section id="figures" aria-labelledby="figures-title" className="space-y-5">

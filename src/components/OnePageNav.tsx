@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
 import { profile } from "../../data/profile";
 import { navSections } from "@/lib/nav";
-import { OPEN_PALETTE_EVENT } from "./CommandPalette";
+import { OPEN_PALETTE_EVENT } from "@/lib/events";
 import { IconMoon, IconSearch, IconSun } from "./Icons";
 
 export default function OnePageNav() {
