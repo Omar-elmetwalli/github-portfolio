@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import "katex/dist/katex.min.css";
 import { getPublicProjectBySlug, getPublicProjects } from "../../../../data/projects";
 import { profile } from "../../../../data/profile";
 import ProjectCover from "@/components/ProjectCover";
@@ -83,7 +82,7 @@ export default async function ProjectPage({ params }: Params) {
   return (
     <article className="pb-20 pt-24 sm:pt-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Link href="/#projects" className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
+        <Link prefetch={false} href="/#projects" className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
           ← All projects
         </Link>
 
@@ -270,7 +269,7 @@ export default async function ProjectPage({ params }: Params) {
               )}
             </nav>
             <p>
-              <Link href="/#contact" className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline">
+              <Link prefetch={false} href="/#contact" className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline">
                 Questions about this project? Get in touch <IconArrowRight className="h-4 w-4" />
               </Link>
             </p>

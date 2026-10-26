@@ -14,8 +14,9 @@ import { ogImagePath, ogSize } from "@/lib/og";
 import { personJsonLd } from "@/lib/jsonld";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", display: "swap" });
+// Only the body font is preloaded; headings and mono labels swap in when ready.
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap", preload: false });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", display: "swap", preload: false });
 
 const title = `${profile.name}: ${profile.tagline}`;
 

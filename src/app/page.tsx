@@ -5,7 +5,7 @@ import { awards } from "../../data/awards";
 import { publications } from "../../data/publications";
 import FlowVisualizer from "@/components/FlowVisualizer";
 import StatsCounter from "@/components/StatsCounter";
-import ProjectsExplorer from "@/components/ProjectsExplorer";
+import ProjectGrid from "@/components/ProjectGrid";
 import LeadershipSpotlight from "@/components/LeadershipSpotlight";
 import ExperienceTimeline from "@/components/ExperienceTimeline";
 import ContactSection from "@/components/ContactSection";
@@ -47,7 +47,7 @@ export default function Home() {
                 {profile.tagline}
               </p>
             </div>
-            <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+            <p className="text-pretty max-w-xl text-base leading-relaxed text-muted sm:text-lg">
               {profile.hero.lead} {profile.hero.highlight}
               {profile.hero.rest}
             </p>
@@ -56,7 +56,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/#research"
+                prefetch={false} href="/#research"
                 className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-3 text-sm font-semibold text-on-accent hover:bg-accent-strong"
               >
                 View research <IconArrowRight className="h-4 w-4" />
@@ -72,7 +72,7 @@ export default function Home() {
               {aiEnabled ? (
                 <AskAiButton className="inline-flex items-center px-3 py-3 text-sm font-semibold text-accent hover:text-accent-strong" />
               ) : (
-                <Link href="/#contact" className="inline-flex items-center px-3 py-3 text-sm font-semibold text-muted hover:text-ink">
+                <Link prefetch={false} href="/#contact" className="inline-flex items-center px-3 py-3 text-sm font-semibold text-muted hover:text-ink">
                   Get in touch
                 </Link>
               )}
@@ -82,7 +82,7 @@ export default function Home() {
             <FlowVisualizer projectSlug="joukowski-airfoil-aerodynamics" />
           </div>
         </div>
-        <div className="border-t border-line bg-surface/70 backdrop-blur-sm">
+        <div className="border-t border-line bg-surface">
           <div className={wrap}>
             <StatsCounter stats={profile.stats} />
           </div>
@@ -159,7 +159,7 @@ export default function Home() {
             title="All projects"
             intro="Coursework, competitions, and research, from CFD and propulsion to controls and manufacturing. Filter by area or search by tool."
           />
-          <ProjectsExplorer projects={getProjectCards()} />
+          <ProjectGrid projects={getProjectCards()} />
         </div>
       </section>
 

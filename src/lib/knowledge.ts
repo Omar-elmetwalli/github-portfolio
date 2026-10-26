@@ -148,7 +148,8 @@ export function buildKnowledge(): KnowledgeBase {
   chunks.push({
     id: "publications",
     title: "Publications",
-    url: "/#publications",
+    // The publications section only renders when there are entries.
+    url: publications.length ? "/#publications" : "/cv/",
     text: publications.length
       ? publications
           .map((p) => `${p.title}. ${p.authors.join(", ")}. Status: ${p.status}.${p.venue ? ` ${p.venue}.` : ""}${p.year ? ` ${p.year}.` : ""}`)

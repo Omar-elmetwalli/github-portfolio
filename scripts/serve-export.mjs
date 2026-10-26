@@ -3,6 +3,7 @@
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
+import zlib from "node:zlib";
 
 const BASE = "/github-portfolio";
 const OUT = path.resolve("out");
@@ -46,7 +47,15 @@ http
       fs.createReadStream(path.join(OUT, "404.html")).pipe(res);
       return;
     }
-    res.writeHead(200, { "Content-Type": TYPES[path.extname(file).toLowerCase()] ?? "application/octet-stream" });
-    fs.createReadStream(file).pipe(res);
+    // Like GitHub Pages: gzip text assets and allow 10-minute caching.
+    const type = TYPES[path.extname(file).toLowerCase()] ?? "application/octet-stream";
+    const gzip = /text|javascript|json|xml|svg/.test(type) && /\bgzip\b/.test(req.headers["accept-encoding"] ?? "");
+    res.writeHead(200, {
+      "Content-Type": type,
+      "Cache-Control": "max-age=600",
+      ...(gzip ? { "Content-Encoding": "gzip", Vary: "Accept-Encoding" } : {}),
+    });
+    const stream = fs.createReadStream(file);
+    (gzip ? stream.pipe(zlib.createGzip()) : stream).pipe(res);
   })
   .listen(PORT, () => console.log(`Serving out/ at http://localhost:${PORT}${BASE}/`));

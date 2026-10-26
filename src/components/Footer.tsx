@@ -19,16 +19,16 @@ export default function Footer() {
         </div>
         <nav aria-label="Footer" className="md:col-span-4">
           <p className="text-eyebrow text-subtle">Sections</p>
-          <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
+          <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
             {navSections.map((s) => (
               <li key={s.id}>
-                <Link href={`/#${s.id}`} className="text-sm text-muted hover:text-accent">
+                <Link prefetch={false} href={`/#${s.id}`} className="inline-block min-w-6 py-1 text-sm text-muted hover:text-accent">
                   {s.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/cv/" className="text-sm text-muted hover:text-accent">
+              <Link href="/cv/" className="inline-block min-w-6 py-1 text-sm text-muted hover:text-accent">
                 CV
               </Link>
             </li>
@@ -36,13 +36,13 @@ export default function Footer() {
         </nav>
         <div className="md:col-span-3">
           <p className="text-eyebrow text-subtle">Elsewhere</p>
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-2 space-y-1">
             {links.map((l) => (
               <li key={l.label}>
                 <a
                   href={l.href}
                   {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="text-sm text-muted hover:text-accent"
+                  className="inline-block min-w-6 py-1 text-sm text-muted hover:text-accent"
                 >
                   {l.label}
                   {l.external && <span className="sr-only"> (opens in a new tab)</span>}

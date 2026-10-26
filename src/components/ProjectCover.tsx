@@ -54,9 +54,10 @@ export default function ProjectCover({
     const y = 18 + i * 22;
     const amp = 6 + ((seed >>> i) % 14);
     const phase = ((seed >>> (i + 3)) % 100) / 10;
-    let d = `M -10 ${y}`;
-    for (let x = 0; x <= 420; x += 30) {
-      d += ` L ${x} ${(y + amp * Math.sin(x / 45 + phase)).toFixed(1)}`;
+    // Short polyline with integer coordinates keeps the markup small.
+    let d = `M-10 ${Math.round(y + amp * Math.sin(-10 / 45 + phase))}`;
+    for (let x = 25; x <= 420; x += 35) {
+      d += `L${x} ${Math.round(y + amp * Math.sin(x / 45 + phase))}`;
     }
     return d;
   });

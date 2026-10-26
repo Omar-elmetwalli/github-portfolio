@@ -14,7 +14,6 @@ import {
 } from "@/lib/joukowski";
 
 const DEG = Math.PI / 180;
-const CELL = 4; // field sampling cell, CSS px
 const PSI_STEP = 0.15;
 
 type Palette = { line: string; lineStrong: string; body: string; bodyEdge: string; particle: string; low: number[]; high: number[] };
@@ -61,6 +60,8 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let W = 0, H = 0, scale = 1, cx = 0, cy = 0;
+    // Field sampling cell in CSS px: coarser on small screens (less work on phones).
+    let CELL = 4;
     let palette = readPalette();
     let gamma = 0;
     let frame = 0;
@@ -85,6 +86,7 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
       }
       fctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
       pctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CELL = W < 640 ? 6 : 4;
       scale = Math.min(W / 6.6, H / 3.4);
       cx = W / 2 - ((airfoil.xLE + airfoil.xTE) / 2) * scale;
       cy = H / 2;
@@ -107,7 +109,20 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
       return p ?? { x: xMin(), y: 0, age: 0, life: 200 };
     }
 
-    function drawField() {
+    // Each solve gets a token; a newer solve (slider move, resize, theme change)
+    // cancels an older one that is still running.
+    let solveToken = 0;
+
+    /** Solves and paints the field in ~8 ms slices so the page stays responsive. */
+    async function drawField() {
+      const token = ++solveToken;
+      let sliceStart = performance.now();
+      const pause = async () => {
+        if (performance.now() - sliceStart < 8) return false;
+        await new Promise((r) => setTimeout(r, 0));
+        sliceStart = performance.now();
+        return token !== solveToken;
+      };
       const a = alphaRef.current * DEG;
       gamma = circulation(airfoil, a);
       const gw = Math.ceil(W / CELL) + 1;
@@ -135,16 +150,8 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
           img.data[k * 4 + 2] = c[2];
           img.data[k * 4 + 3] = Math.round(Math.pow(s, 1.1) * 115);
         }
+        if (await pause()) return;
       }
-
-      fctx!.clearRect(0, 0, W, H);
-      // Pressure field, upscaled smoothly.
-      const small = document.createElement("canvas");
-      small.width = gw;
-      small.height = gh;
-      small.getContext("2d")!.putImageData(img, 0, 0);
-      fctx!.imageSmoothingEnabled = true;
-      fctx!.drawImage(small, 0, 0, gw * CELL, gh * CELL);
 
       // Streamlines: marching squares on psi, levels offset from the body streamline.
       const psiBody = (gamma / (2 * Math.PI)) * Math.log(airfoil.R);
@@ -173,7 +180,17 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
             }
           }
         }
+        if (await pause()) return;
       }
+
+      // Paint everything at once so a half-finished solve is never shown.
+      fctx!.clearRect(0, 0, W, H);
+      const small = document.createElement("canvas");
+      small.width = gw;
+      small.height = gh;
+      small.getContext("2d")!.putImageData(img, 0, 0);
+      fctx!.imageSmoothingEnabled = true;
+      fctx!.drawImage(small, 0, 0, gw * CELL, gh * CELL);
       fctx!.lineWidth = 1;
       fctx!.strokeStyle = palette.line;
       fctx!.stroke(normal);
@@ -252,7 +269,7 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
     }
 
     function resetParticles() {
-      const count = Math.round(Math.min(320, (W * H) / 1400));
+      const count = Math.round(Math.min(W < 640 ? 160 : 320, (W * H) / 1400));
       particles = Array.from({ length: count }, () => spawn(undefined, true));
       pctx!.clearRect(0, 0, W, H);
     }
@@ -260,17 +277,27 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
     let pending = 0;
     redrawRef.current = () => {
       cancelAnimationFrame(pending);
-      pending = requestAnimationFrame(drawField);
+      pending = requestAnimationFrame(() => void drawField());
     };
 
-    layout();
-    drawField();
-    resetParticles();
-    start();
+    // Defer the first solve until the browser is idle so it doesn't compete
+    // with first paint and hydration.
+    let booted = false;
+    const boot = () => {
+      booted = true;
+      layout();
+      void drawField();
+      resetParticles();
+      start();
+    };
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 300));
+    const cancelIdle = window.cancelIdleCallback ?? window.clearTimeout;
+    const idleId = idle(boot, { timeout: 2000 });
 
     const resize = new ResizeObserver(() => {
+      if (!booted) return;
       layout();
-      drawField();
+      void drawField();
       resetParticles();
     });
     resize.observe(wrap);
@@ -289,12 +316,13 @@ export default function FlowVisualizer({ projectSlug }: { projectSlug?: string }
 
     const themeWatch = new MutationObserver(() => {
       palette = readPalette();
-      drawField();
+      void drawField();
       pctx!.clearRect(0, 0, W, H);
     });
     themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
     return () => {
+      cancelIdle(idleId);
       cancelAnimationFrame(frame);
       cancelAnimationFrame(pending);
       resize.disconnect();

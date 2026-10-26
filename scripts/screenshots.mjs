@@ -5,7 +5,7 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { chromium } from "playwright-core";
+import { chromium } from "@playwright/test";
 
 const OUT = path.resolve(process.argv[2] ?? "screenshots");
 const PORT = 4179;
@@ -46,6 +46,8 @@ try {
           imgs.forEach((img) => (img.loading = "eager"));
           await Promise.all(imgs.map((img) => (img.complete ? null : new Promise((r) => { img.onload = img.onerror = r; }))));
         });
+        // Full-page captures don't scroll, so render sections that use content-visibility.
+        await page.addStyleTag({ content: "main > section { content-visibility: visible !important; }" });
         // Scroll through once so lazy images are painted, then return to the top.
         await page.evaluate(async () => {
           for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight / 2) {

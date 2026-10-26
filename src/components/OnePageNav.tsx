@@ -54,11 +54,12 @@ export default function OnePageNav() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2.5 rounded-md" aria-label={`${profile.name}, home`}>
+        <Link prefetch={false} href="/" className="flex items-center gap-2.5 rounded-md">
           <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center rounded-md border border-line-strong font-mono text-xs font-semibold text-accent">
             OE
           </span>
-          <span className="hidden font-display text-[15px] font-semibold text-ink sm:block">{profile.name}</span>
+          {/* Visually hidden on phones so the link still has a name matching its text. */}
+          <span className="sr-only font-display text-[15px] font-semibold text-ink sm:not-sr-only">{profile.name}</span>
         </Link>
 
         <nav aria-label="Main" className="hidden xl:block">
@@ -68,7 +69,7 @@ export default function OnePageNav() {
               return (
                 <li key={s.id}>
                   <Link
-                    href={`/#${s.id}`}
+                    prefetch={false} href={`/#${s.id}`}
                     aria-current={active ? "true" : undefined}
                     className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                       active ? "bg-accent-soft font-medium text-accent" : "text-muted hover:text-ink"
@@ -87,11 +88,12 @@ export default function OnePageNav() {
             type="button"
             onClick={openPalette}
             className="flex items-center gap-2 rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-subtle hover:border-line-strong hover:text-ink"
-            aria-label="Search (Ctrl+K)"
+            title="Search (Ctrl+K)"
           >
             <IconSearch className="h-4 w-4" />
-            <span className="hidden md:inline">Search</span>
-            <kbd className="hidden rounded border border-line px-1 font-mono text-[10px] md:inline">⌘K</kbd>
+            {/* Visible label on wider screens; screen-reader label otherwise. */}
+            <span className="sr-only md:not-sr-only">Search</span>
+            <kbd aria-hidden="true" className="hidden rounded border border-line px-1 font-mono text-[10px] md:inline">⌘K</kbd>
           </button>
           <Link
             href="/cv/"
@@ -130,7 +132,7 @@ export default function OnePageNav() {
             {navSections.map((s) => (
               <li key={s.id}>
                 <Link
-                  href={`/#${s.id}`}
+                  prefetch={false} href={`/#${s.id}`}
                   onClick={() => setMenuOpen(false)}
                   className="block rounded-md px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-2"
                 >

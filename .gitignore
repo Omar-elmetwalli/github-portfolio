@@ -51,3 +51,10 @@ next-env.d.ts
 
 # local career tool output (scripts/career-tools.ts)
 /career-output/
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Lighthouse reports
+/lighthouse/

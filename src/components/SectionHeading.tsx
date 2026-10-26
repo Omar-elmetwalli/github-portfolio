@@ -24,7 +24,7 @@ export default function SectionHeading({
       <h2 id={`${id}-title`} className="text-h2 text-ink">
         {title}
       </h2>
-      {intro && <p className="text-base leading-relaxed text-muted sm:text-lg">{intro}</p>}
+      {intro && <p className="text-pretty text-base leading-relaxed text-muted sm:text-lg">{intro}</p>}
     </header>
   );
 }
