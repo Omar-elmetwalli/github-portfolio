@@ -74,6 +74,7 @@ export const profile = {
   bio: [
     "I am an aerospace engineering researcher at the intersection of **computational fluid dynamics** and **scientific machine learning**. My research investigates how physical conservation laws, vorticity dynamics, and Navier–Stokes residuals can constrain deep neural operators and PINNs to achieve physically consistent, fast aerodynamic predictions.",
     "Alongside theoretical and numerical modeling, I have hands-on experimental experience with **Particle Image Velocimetry (PIV)** diagnostics for high-resolution flow measurement, as well as industrial R&D in turbomachinery suction devices (patent-pending).",
+    "I am equally interested in **control**: closing the loop between models and physical systems. I have designed classical autopilots from Boeing 747 modal analysis, LQR state feedback for active suspension, and root-locus compensation for an unstable inverted pendulum, and I want to bring these tools together with reduced-order and learned flow models for **active flow control**.",
   ],
   collaborations: [
     { name: "UT Dallas & Stevens Institute", focus: "Physics-informed 3D U-Nets & turbulence datasets" },
