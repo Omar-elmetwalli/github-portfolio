@@ -1,3 +1,6 @@
+// Content lives in data/content/publications.json; edit it there or with `pnpm admin`.
+import data from "./content/publications.json" with { type: "json" };
+
 export type PublicationStatus = "In preparation" | "Under review" | "Preprint" | "Published";
 
 export interface Publication {
@@ -15,12 +18,5 @@ export interface Publication {
   project?: string;
 }
 
-// TODO(Omar): add entries. The section stays hidden while this list is empty.
-// Example:
-// {
-//   title: "…",
-//   authors: ["…", "O. Elmetwalli", "…"],
-//   status: "In preparation",
-//   project: "ml-augmented-turbulence-modeling",
-// },
-export const publications: Publication[] = [];
+// The publications section stays hidden while this list is empty.
+export const publications = data as Publication[];

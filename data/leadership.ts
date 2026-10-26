@@ -1,3 +1,6 @@
+// Content lives in data/content/leadership.json; edit it there or with `pnpm admin`.
+import data from "./content/leadership.json" with { type: "json" };
+
 export interface GalleryItem {
   src: string;
   /** Short caption shown under the thumbnail. */
@@ -31,57 +34,7 @@ export interface LeadershipRole {
   gallery: GalleryItem[];
 }
 
-export const leadershipRoles: LeadershipRole[] = [
-  {
-    id: 'aiaa-zewail-city',
-    title: 'Founder & Chair',
-    organization: 'American Institute of Aeronautics and Astronautics (AIAA) — Zewail City Student Branch',
-    shortName: 'AIAA Zewail City Student Branch',
-    subtitle: "Egypt's First Official AIAA-Affiliated Student Chapter | AIAA Member #1865899",
-    location: 'University of Science and Technology, Zewail City, Giza, Egypt',
-    period: '2024 — Present',
-    status: 'Active',
-    summary:
-      "Founded from scratch and established the first official AIAA-affiliated Student Branch in Egypt at Zewail City of Science and Technology. Built the chapter from zero to 60+ active members structured into five departments (Technical, Marketing & Media, PR & Outreach, HR & Operations, Fundraising). Forged regional academic partnerships with universities across Saudi Arabia (KSA) and the United Arab Emirates (UAE), as well as ASME AUC. Driven by a dedicated vision to build a thriving aerospace research community in Egypt and place the nation firmly on the global aerospace map.",
-    responsibilities: [
-      "Chartered Egypt's first AIAA-affiliated student chapter, securing official recognition from AIAA Global Headquarters.",
-      "Built the branch from zero to 60+ members with a full departmental structure: Technical, Marketing & Media, PR & Outreach, HR & Operations, and Fundraising.",
-      "Organized 'D’Alembert’s Paradox: A Tale of Two Schools,' a premier branch symposium featuring Prof. Haitham Taha (UC Irvine), sponsored by Labtronic.",
-      "Organized technical webinars (AeroTalk series) connecting students with global aerospace researchers and industry experts.",
-      "Established bilateral collaborations with universities in KSA and UAE to promote regional aerospace competitions and joint student projects.",
-      "Formed cross-institutional joint initiatives with ASME AUC (American Society of Mechanical Engineers at the American University in Cairo).",
-      "Lead multidisciplinary student project teams across CFD/Aerodynamics, CubeSat systems, and Design/Build/Fly aircraft.",
-    ],
-    initiatives: [
-      "Distinguished Speaker Symposia: Hosted world-renowned flight dynamics and aerodynamics professor Dr. Haitham Taha (UC Irvine) for an on-campus seminar on unsteady aerodynamics.",
-      "Regional Aerospace Network: Initiated cross-border student collaborations with universities in Saudi Arabia and the UAE to share research and competition expertise.",
-      "ASME AUC Joint Workshops: Partnered with ASME AUC on engineering workshops, technical panels, and intercollegiate aerospace hackathons.",
-      "AeroTalk Technical Webinars: Conducted webinars on supersonic compressible flows, rocket propulsion systems, and orbital trajectory design.",
-      "Hands-On Flight Prototyping: Mentored student project tracks in aerodynamic airfoil testing, balsa glider trimming, and telemetry integration.",
-    ],
-    achievements: [
-      "Established the first accredited AIAA Student Branch in Egypt's history.",
-      "Recruited, onboarded, and led 60+ students spanning aerospace, mechanical, communications, and computer engineering.",
-      "Successfully hosted international guest lectures sponsored by industry leaders including Labtronic.",
-      "Launched active student teams competing in national and regional aerospace engineering competitions.",
-    ],
-    tags: ['Leadership', 'Founder & Chair', 'AIAA', 'Aerospace Community', 'Symposia', 'Global Network', 'Mentorship'],
-    links: {
-      website: 'https://aiaa-zewail.vercel.app/',
-      linkedin: 'https://www.linkedin.com/company/aiaa-student-branch-zewail-city/',
-    },
-    // TODO(Omar): replace these captions (written from the file names) with real ones.
-    gallery: [
-      { src: '/images/leadership/aiaa/dr-haitham-visit-1.webp', caption: 'Prof. Haitham Taha visit', alt: 'Prof. Haitham Taha at the AIAA Zewail City symposium (photo 1)' },
-      { src: '/images/leadership/aiaa/dr-haitham-visit-2.webp', caption: 'Prof. Haitham Taha visit', alt: 'Prof. Haitham Taha at the AIAA Zewail City symposium (photo 2)' },
-      { src: '/images/leadership/aiaa/dr-haitham-visit-3.webp', caption: 'Prof. Haitham Taha visit', alt: 'Prof. Haitham Taha at the AIAA Zewail City symposium (photo 3)' },
-      { src: '/images/leadership/aiaa/first-webinar.webp', caption: 'AeroTalk webinar #1', alt: 'Poster for the first AIAA Zewail City webinar' },
-      { src: '/images/leadership/aiaa/third-webinar.webp', caption: 'AeroTalk webinar #3', alt: 'Poster for the third AIAA Zewail City webinar' },
-      { src: '/images/leadership/aiaa/aiaa-highlights.mp4', caption: 'Branch highlights (video)', poster: '/images/leadership/aiaa/dr-haitham-visit-1.webp' },
-      { src: '/images/leadership/aiaa/aiaa-event.mp4', caption: 'Branch event (video)', poster: '/images/leadership/aiaa/dr-haitham-visit-2.webp' },
-    ],
-  },
-];
+export const leadershipRoles = data as LeadershipRole[];
 
 export const getLeadershipRoleById = (id: string): LeadershipRole | undefined => {
   return leadershipRoles.find((role) => role.id === id);

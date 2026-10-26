@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio admin</title>
+<style>
+  :root {
+    --bg: #f5f7fa; --surface: #fff; --surface-2: #eef2f6; --line: #d9e0e8; --ink: #0b1220; --muted: #4a5668;
+    --accent: #0e7490; --accent-soft: #e3f4f8; --danger: #b42318; --danger-soft: #fdecea; --good: #067647; --good-soft: #e5f6ee;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #070b12; --surface: #0e1520; --surface-2: #151e2c; --line: #233046; --ink: #e8eef6; --muted: #a3b1c2;
+      --accent: #22d3ee; --accent-soft: rgb(34 211 238 / .12); --danger: #f97066; --danger-soft: rgb(249 112 102 / .12);
+      --good: #47cd89; --good-soft: rgb(71 205 137 / .12); color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-size: 14px; }
+  header { position: sticky; top: 0; z-index: 5; display: flex; gap: 12px; align-items: center; padding: 10px 18px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 16px; margin: 0 12px 0 0; }
+  header .spacer { flex: 1; }
+  .status { font-size: 12px; color: var(--muted); }
+  .status.dirty { color: var(--danger); font-weight: 600; }
+  .layout { display: grid; grid-template-columns: 210px 1fr; min-height: calc(100vh - 53px); }
+  nav { border-right: 1px solid var(--line); background: var(--surface); padding: 12px 8px; }
+  nav button { display: block; width: 100%; text-align: left; margin-bottom: 2px; background: none; border: 0; padding: 8px 10px; border-radius: 6px; color: var(--muted); font: inherit; cursor: pointer; }
+  nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  main { padding: 20px 24px 80px; max-width: 1100px; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  .hint { color: var(--muted); font-size: 12px; margin: 2px 0 10px; }
+  button, .btn { font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 6px 12px; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  @media (prefers-color-scheme: dark) { button.primary { color: #04141a; } }
+  button.danger { color: var(--danger); }
+  button.small { padding: 2px 8px; font-size: 12px; }
+  button:disabled { opacity: .5; cursor: default; }
+  label { display: block; font-weight: 600; font-size: 12px; margin: 12px 0 4px; color: var(--muted); }
+  input[type=text], input[type=number], textarea, select { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+  input:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin: 10px 0; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .list-item { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+  .list-item:hover { background: var(--surface-2); }
+  .list-item.active { border-color: var(--accent); background: var(--accent-soft); }
+  .list-item .meta { color: var(--muted); font-size: 12px; margin-left: auto; white-space: nowrap; }
+  .split { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; }
+  .sticky { position: sticky; top: 70px; max-height: calc(100vh - 90px); overflow: auto; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; user-select: none; }
+  .chip input { margin: 0; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .thumb { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+  .thumb img, .thumb .file { width: 100%; height: 100px; object-fit: contain; display: flex; align-items: center; justify-content: center; color: #333; font-size: 12px; }
+  .thumb .bar { display: flex; gap: 4px; padding: 6px; background: var(--surface-2); justify-content: space-between; }
+  .thumb code { display: block; font-size: 10px; padding: 4px 6px; color: var(--muted); background: var(--surface); word-break: break-all; }
+  .drop { border: 2px dashed var(--line); border-radius: 10px; padding: 16px; text-align: center; color: var(--muted); }
+  .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .problems { background: var(--danger-soft); color: var(--danger); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  .ok { background: var(--good-soft); color: var(--good); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  pre.log { background: #0b1220; color: #d7e0ea; padding: 12px; border-radius: 8px; max-height: 360px; overflow: auto; font-size: 12px; white-space: pre-wrap; }
+  fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; padding: 4px 14px 12px; }
+  legend { font-weight: 700; padding: 0 6px; }
+  .arr-item { border-left: 3px solid var(--line); padding-left: 12px; margin: 10px 0; position: relative; }
+  .arr-tools { display: flex; gap: 4px; margin-top: 6px; }
+  dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); padding: 18px; width: min(560px, 92vw); }
+  dialog::backdrop { background: rgb(0 0 0 / .45); }
+  .toast { position: fixed; bottom: 18px; right: 18px; background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Portfolio admin</h1>
+  <span id="status" class="status">Loading…</span>
+  <span class="spacer"></span>
+  <a class="btn" href="http://localhost:3000" target="_blank" rel="noopener">Preview site ↗</a>
+  <button id="saveBtn" class="primary" disabled>Save changes</button>
+  <button id="checkBtn">Check site</button>
+  <button id="publishBtn">Publish…</button>
+</header>
+<div class="layout">
+  <nav id="tabs"></nav>
+  <main id="main"></main>
+</div>
+<dialog id="publishDlg">
+  <h2>Publish to the live site</h2>
+  <p class="hint">Commits your changes in data/ and public/ and pushes them. GitHub then rebuilds and deploys the site (a few minutes). Run "Check site" first if you changed a lot.</p>
+  <label for="pubMsg">What changed? (commit message)</label>
+  <input id="pubMsg" type="text" value="Update site content" />
+  <div class="row" style="margin-top:14px; justify-content:flex-end">
+    <button id="pubCancel">Cancel</button>
+    <button id="pubGo" class="primary">Commit and push</button>
+  </div>
+  <div id="pubOut"></div>
+</dialog>
+<div id="toast" class="toast"></div>
+
+<script>
+// ---------- state ----------
+const TABS = [
+  { id: "projects", label: "Projects", file: "projects" },
+  { id: "profile", label: "Profile & research", file: "profile" },
+  { id: "resume", label: "Experience & CV", file: "resume" },
+  { id: "leadership", label: "Leadership", file: "leadership" },
+  { id: "awards", label: "Awards", file: "awards" },
+  { id: "publications", label: "Publications", file: "publications" },
+  { id: "summaries", label: "Plain summaries", file: "summaries" },
+  { id: "uploads", label: "Uploads", file: null },
+];
+const HELP = {
+  profile: "Name, tagline, availability badge, emails, bio paragraphs (**bold** works), research interests, stats, skills, education.",
+  resume: "Experience timeline, certifications, technical skills, languages, and the CV PDF path (upload a new CV under Uploads → files).",
+  leadership: "Leadership roles. Gallery items need a caption; videos can have a poster image.",
+  awards: "Awards & honors. Add an item, then fill title, issuer, date.",
+  publications: 'Each needs title, authors (list), and status: "In preparation", "Under review", "Preprint", or "Published". The section appears on the site once there is one entry.',
+  summaries: 'Plain-language overviews per project (key = project slug). Set "reviewed" to on to publish one.',
+};
+const data = {};        // file name -> parsed JSON
+const dirty = new Set(); // file names with unsaved changes
+let categories = [];
+let tab = "projects";
+let selected = 0;       // selected project index
+
+const $ = (sel, el = document) => el.querySelector(sel);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "class") el.className = v;
+    else if (v === true) el.setAttribute(k, "");
+    else if (v !== false && v != null) el.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid.nodeType ? kid : String(kid));
+  return el;
+};
+const kebab = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const pretty = (k) => String(k).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (c) => c.toUpperCase());
+const toast = (msg) => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); };
+const clone = (v) => JSON.parse(JSON.stringify(v));
+
+function markDirty(file) {
+  dirty.add(file);
+  updateStatus();
+}
+function updateStatus() {
+  const s = $("#status");
+  if (dirty.size) { s.textContent = `Unsaved: ${[...dirty].join(", ")}`; s.className = "status dirty"; }
+  else { s.textContent = "All changes saved"; s.className = "status"; }
+  $("#saveBtn").disabled = dirty.size === 0;
+}
+window.addEventListener("beforeunload", (e) => { if (dirty.size) { e.preventDefault(); e.returnValue = ""; } });
+
+// ---------- API ----------
+async function api(url, opts = {}) {
+  const res = await fetch(url, opts);
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) { const err = new Error(json.error || res.statusText); err.problems = json.problems; throw err; }
+  return json;
+}
+async function upload(file, dir) {
+  const res = await api(`/api/upload?dir=${encodeURIComponent(dir)}&name=${encodeURIComponent(file.name)}`, { method: "POST", body: file });
+  return res.path;
+}
+const preview = (p) => `/public${p}`;
+const isImage = (p) => /\.(webp|png|jpe?g|gif|svg)$/i.test(p);
+
+async function saveAll() {
+  const problems = [];
+  for (const f of [...dirty]) {
+    try {
+      await api(`/api/content/${f}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data[f], (k, v) => (k.startsWith("__") ? undefined : v)) });
+      dirty.delete(f);
+    } catch (e) {
+      problems.push(`${f}: ${e.message}`, ...(e.problems || []).map((p) => `  • ${p}`));
+    }
+  }
+  updateStatus();
+  const box = $("#saveProblems");
+  if (problems.length) {
+    if (box) { box.hidden = false; box.textContent = problems.join("\n"); box.style.whiteSpace = "pre-wrap"; }
+    toast("Some changes could not be saved");
+  } else {
+    if (box) box.hidden = true;
+    toast("Saved");
+  }
+}
+
+// ---------- generic editor (profile, resume, ...) ----------
+function blankLike(v) {
+  if (Array.isArray(v)) return [];
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, blankLike(x)]));
+  if (typeof v === "number") return 0;
+  if (typeof v === "boolean") return false;
+  return "";
+}
+function fileField(get, set, file) {
+  // String fields holding a /images or /files path get an upload button.
+  const wrap = h("div", { class: "row" });
+  const input = h("input", { type: "text", value: get() ?? "", oninput: (e) => { set(e.target.value); markDirty(file); } });
+  input.style.flex = "1";
+  const picker = h("input", { type: "file", hidden: true, onchange: async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const current = get() || "";
+    const dir = (current.startsWith("/") ? current.slice(1).split("/").slice(0, -1).join("/") : "") || (isImage(f.name) ? "images/uploads" : "files");
+    try { const p = await upload(f, dir); set(p); input.value = p; markDirty(file); toast(`Uploaded ${p}`); } catch (err) { alert(err.message); }
+  } });
+  wrap.append(input, picker, h("button", { class: "small", type: "button", onclick: () => picker.click() }, "Upload…"));
+  return wrap;
+}
+function editor(parent, obj, key, file, label) {
+  const v = obj[key];
+  const name = label ?? pretty(key);
+  if (v === null || v === undefined) return;
+  if (Array.isArray(v)) {
+    const fs = h("fieldset", {}, h("legend", {}, `${name} (${v.length})`));
+    const render = () => {
+      fs.querySelectorAll(":scope > .arr-item, :scope > .add").forEach((n) => n.remove());
+      v.forEach((item, i) => {
+        const box = h("div", { class: "arr-item" });
+        if (item && typeof item === "object") {
+          for (const k of Object.keys(item)) editor(box, item, k, file);
+        } else {
+          editor(box, v, i, file, `${name} ${i + 1}`);
+        }
+        const tools = h("div", { class: "arr-tools" },
+          h("button", { class: "small", type: "button", disabled: i === 0, onclick: () => { [v[i - 1], v[i]] = [v[i], v[i - 1]]; markDirty(file); render(); } }, "↑"),
+          h("button", { class: "small", type: "button", disabled: i === v.length - 1, onclick: () => { [v[i + 1], v[i]] = [v[i], v[i + 1]]; markDirty(file); render(); } }, "↓"),
+          h("button", { class: "small", type: "button", onclick: () => { v.splice(i + 1, 0, clone(item)); markDirty(file); render(); } }, "Duplicate"),
+          h("button", { class: "small danger", type: "button", onclick: () => { if (confirm("Remove this item?")) { v.splice(i, 1); markDirty(file); render(); } } }, "Remove"));
+        box.append(tools);
+        fs.append(box);
+      });
+      fs.append(h("button", { class: "small add", type: "button", onclick: () => {
+        v.push(v.length ? blankLike(v[0]) : (key === "authors" || typeof v[0] === "string" ? "" : ""));
+        markDirty(file); render();
+      } }, `+ Add ${name.toLowerCase().replace(/s$/, "")}`));
+      fs.querySelector("legend").textContent = `${name} (${v.length})`;
+    };
+    render();
+    parent.append(fs);
+    return;
+  }
+  if (typeof v === "object") {
+    const fs = h("fieldset", {}, h("legend", {}, name));
+    for (const k of Object.keys(v)) editor(fs, v, k, file);
+    parent.append(fs);
+    return;
+  }
+  parent.append(h("label", {}, name));
+  if (typeof v === "boolean") {
+    parent.append(h("input", { type: "checkbox", checked: v, onchange: (e) => { obj[key] = e.target.checked; markDirty(file); } }));
+  } else if (typeof v === "number") {
+    parent.append(h("input", { type: "number", step: "any", value: v, oninput: (e) => { obj[key] = Number(e.target.value); markDirty(file); } }));
+  } else if (/^\/(images|files)\//.test(v) || /(path|src|poster|pdf)$/i.test(String(key))) {
+    parent.append(fileField(() => obj[key], (x) => (obj[key] = x), file));
+  } else if (v.length > 70 || v.includes("\n")) {
+    parent.append(h("textarea", { rows: Math.min(10, Math.ceil(v.length / 90) + 1), oninput: (e) => { obj[key] = e.target.value; markDirty(file); } }, v));
+  } else {
+    parent.append(h("input", { type: "text", value: v, oninput: (e) => { obj[key] = e.target.value; markDirty(file); } }));
+  }
+}
+
+function renderGeneric(file) {
+  const main = $("#main");
+  const t = TABS.find((x) => x.file === file);
+  main.append(h("h2", {}, t.label), h("p", { class: "hint" }, HELP[file] || ""), h("div", { id: "saveProblems", class: "problems", hidden: true }));
+  const root = data[file];
+  if (Array.isArray(root)) {
+    const holder = { [file]: root };
+    editor(main, holder, file, file, t.label);
+    if (!root.length && file === "publications") {
+      main.append(h("button", { type: "button", onclick: () => {
+        root.push({ title: "", authors: ["O. Elmetwalli"], status: "In preparation", venue: "", year: "", pdf: "", doi: "", arxiv: "", project: "" });
+        markDirty(file); show(tab);
+      } }, "+ Add first publication"));
+    }
+    if (!root.length && file === "awards") {
+      main.append(h("button", { type: "button", onclick: () => { root.push({ title: "", issuer: "", date: "", description: "" }); markDirty(file); show(tab); } }, "+ Add first award"));
+    }
+  } else if (file === "summaries") {
+    const keys = Object.keys(root);
+    if (!keys.length) main.append(h("p", { class: "hint" }, "No summaries yet. Generate them with `pnpm ai:summaries` (needs an API key in .env.local), then review them here."));
+    for (const k of keys) {
+      const card = h("div", { class: "card" }, h("strong", {}, k));
+      editor(card, root[k], "text", file, "Text");
+      editor(card, root[k], "reviewed", file, "Reviewed (published on the site)");
+      main.append(card);
+    }
+  } else {
+    for (const k of Object.keys(root)) editor(main, root, k, file);
+  }
+}
+
+// ---------- projects editor ----------
+function newProject() {
+  return { slug: "", categories: [], title: "New project", date: new Date().toISOString().slice(0, 7), tags: [], tools: [], summary: "", sections: [{ title: "Overview", content: "" }], links: {}, gallery: [] };
+}
+function listInput(p, key, label, hint) {
+  return [
+    h("label", {}, label),
+    h("input", { type: "text", value: (p[key] || []).join(", "), placeholder: hint, oninput: (e) => { p[key] = e.target.value.split(",").map((s) => s.trim()).filter(Boolean); markDirty("projects"); } }),
+  ];
+}
+function renderProjects() {
+  const main = $("#main");
+  const list = data.projects;
+  main.append(h("h2", {}, "Projects"), h("p", { class: "hint" }, "Pick a project to edit, or add a new one. Order here = order on the site. Inline math: $Re = 10^5$."), h("div", { id: "saveProblems", class: "problems", hidden: true }));
+  const split = h("div", { class: "split" });
+  const side = h("div", { class: "card sticky" });
+  const search = h("input", { type: "text", placeholder: "Filter…", oninput: () => drawList() });
+  const items = h("div");
+  side.append(h("div", { class: "row", style: "margin-bottom:8px" },
+    h("button", { class: "primary", type: "button", onclick: () => { list.unshift(newProject()); selected = 0; markDirty("projects"); show("projects"); } }, "+ New project")), search, items);
+  const drawList = () => {
+    items.replaceChildren();
+    const q = search.value.toLowerCase();
+    list.forEach((p, i) => {
+      if (q && !p.title.toLowerCase().includes(q)) return;
+      items.append(h("div", { class: `list-item${i === selected ? " active" : ""}`, onclick: () => { selected = i; show("projects"); } },
+        h("span", {}, p.title || "(untitled)"), h("span", { class: "meta" }, (p.featured ? "★ " : "") + (p.date || ""))));
+    });
+  };
+  drawList();
+  split.append(side);
+  const p = list[selected];
+  const form = h("div");
+  if (p) form.append(projectForm(p, selected));
+  split.append(form);
+  main.append(split);
+}
+
+function projectForm(p, index) {
+  const D = () => markDirty("projects");
+  const wrap = h("div");
+  const slugInput = h("input", { type: "text", value: p.slug, placeholder: "auto from title", oninput: (e) => { p.slug = e.target.value; D(); } });
+  const card1 = h("div", { class: "card" },
+    h("div", { class: "row", style: "justify-content:space-between" },
+      h("strong", {}, "Basics"),
+      h("div", { class: "row" },
+        p.slug ? h("a", { class: "btn", href: `http://localhost:3000/projects/${p.slug}/`, target: "_blank", rel: "noopener" }, "View ↗") : null,
+        h("button", { class: "small", type: "button", disabled: index === 0, onclick: () => { [data.projects[index - 1], data.projects[index]] = [p, data.projects[index - 1]]; selected = index - 1; D(); show("projects"); } }, "Move up"),
+        h("button", { class: "small", type: "button", disabled: index === data.projects.length - 1, onclick: () => { [data.projects[index + 1], data.projects[index]] = [p, data.projects[index + 1]]; selected = index + 1; D(); show("projects"); } }, "Move down"),
+        h("button", { class: "small danger", type: "button", onclick: () => { if (confirm(`Delete "${p.title}"? (Its files stay in public/.)`)) { data.projects.splice(index, 1); selected = 0; D(); show("projects"); } } }, "Delete"))),
+    h("label", {}, "Title"),
+    h("input", { type: "text", value: p.title, oninput: (e) => { p.title = e.target.value; if (!p.slug || p.__autoSlug) { p.slug = kebab(e.target.value); p.__autoSlug = true; slugInput.value = p.slug; } D(); } }),
+    h("div", { class: "grid2" },
+      h("div", {}, h("label", {}, "Slug (URL: /projects/<slug>/)"), slugInput),
+      h("div", {}, h("label", {}, "Date (e.g. 2026-03 or 2024 — Present)"), h("input", { type: "text", value: p.date, oninput: (e) => { p.date = e.target.value; D(); } }))),
+    h("label", {}, "Categories (drive the filters)"),
+    h("div", { class: "chips" }, categories.map((c) => h("label", { class: "chip" },
+      h("input", { type: "checkbox", checked: p.categories.includes(c), onchange: (e) => { p.categories = e.target.checked ? [...p.categories, c] : p.categories.filter((x) => x !== c); D(); } }), c))),
+    h("div", { class: "row", style: "margin-top:12px; gap:18px" },
+      h("label", { class: "chip" }, h("input", { type: "checkbox", checked: !!p.featured, onchange: (e) => { if (e.target.checked) p.featured = true; else delete p.featured; D(); } }), "Featured in “Selected research”"),
+      h("label", { class: "chip" }, h("input", { type: "checkbox", checked: !!p.confidential, onchange: (e) => { if (e.target.checked) { p.confidential = true; p.publicSummary ??= ""; } else { delete p.confidential; } D(); show("projects"); } }), "Confidential")),
+    p.confidential ? [h("label", {}, "Public summary (the only text shown publicly)"), h("textarea", { rows: 3, oninput: (e) => { p.publicSummary = e.target.value; D(); } }, p.publicSummary || "")] : null,
+    h("label", {}, "Summary"),
+    h("textarea", { rows: 4, oninput: (e) => { p.summary = e.target.value; D(); } }, p.summary),
+    ...listInput(p, "tools", "Tools (comma-separated, first 4 show on the card)", "OpenFOAM, Python, PyTorch"),
+    ...listInput(p, "tags", "Tags (comma-separated, used for search)", "CFD, Turbulence"),
+  );
+  wrap.append(card1);
+
+  // Sections
+  const sec = h("div", { class: "card" }, h("strong", {}, "Write-up sections"));
+  p.sections.forEach((s, i) => {
+    sec.append(h("div", { class: "arr-item" },
+      h("label", {}, `Section ${i + 1} title`),
+      h("input", { type: "text", value: s.title, oninput: (e) => { s.title = e.target.value; D(); } }),
+      h("label", {}, "Text"),
+      h("textarea", { rows: 5, oninput: (e) => { s.content = e.target.value; D(); } }, s.content),
+      h("div", { class: "arr-tools" },
+        h("button", { class: "small", type: "button", disabled: i === 0, onclick: () => { [p.sections[i - 1], p.sections[i]] = [s, p.sections[i - 1]]; D(); show("projects"); } }, "↑"),
+        h("button", { class: "small", type: "button", disabled: i === p.sections.length - 1, onclick: () => { [p.sections[i + 1], p.sections[i]] = [s, p.sections[i + 1]]; D(); show("projects"); } }, "↓"),
+        h("button", { class: "small danger", type: "button", onclick: () => { p.sections.splice(i, 1); D(); show("projects"); } }, "Remove"))));
+  });
+  sec.append(h("button", { class: "small", type: "button", onclick: () => { p.sections.push({ title: "", content: "" }); D(); show("projects"); } }, "+ Add section"));
+  wrap.append(sec);
+
+  // Links
+  const linkField = (key, label, uploadable) => {
+    const get = () => p.links[key] ?? "";
+    const set = (v) => { if (v) p.links[key] = v; else delete p.links[key]; };
+    if (!uploadable) return [h("label", {}, label), h("input", { type: "text", value: get(), oninput: (e) => { set(e.target.value); D(); } })];
+    const row = h("div", { class: "row" });
+    const input = h("input", { type: "text", value: get(), placeholder: "/files/my-report.pdf", oninput: (e) => { set(e.target.value); D(); } });
+    input.style.flex = "1";
+    const picker = h("input", { type: "file", accept: "application/pdf", hidden: true, onchange: async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      try { const path = await upload(f, "files"); set(path); input.value = path; D(); toast(`Uploaded ${path}`); } catch (err) { alert(err.message); }
+    } });
+    row.append(input, picker, h("button", { class: "small", type: "button", onclick: () => picker.click() }, "Upload PDF…"));
+    return [h("label", {}, label), row];
+  };
+  wrap.append(h("div", { class: "card" }, h("strong", {}, "Links"),
+    h("div", { class: "grid2" },
+      h("div", {}, ...linkField("paper", "Main report / paper PDF", true)),
+      h("div", {}, ...linkField("paperTitle", "Button label (optional)")),
+      h("div", {}, ...linkField("report", "Second PDF (optional)", true)),
+      h("div", {}, ...linkField("reportTitle", "Button label (optional)")),
+      h("div", {}, ...linkField("github", "GitHub URL")),
+      h("div", {}, ...linkField("demo", "Demo URL")))));
+
+  // Gallery
+  const gal = h("div", { class: "card" }, h("strong", {}, "Figures, photos & videos"),
+    h("p", { class: "hint" }, "The first image is the card cover. PNG/JPG become WebP automatically. Captions come from file names, so name files descriptively (e.g. cl-vs-aoa.png)."));
+  const grid = h("div", { class: "gallery" });
+  p.gallery.forEach((src, i) => {
+    grid.append(h("div", { class: "thumb" },
+      isImage(src) ? h("img", { src: preview(src), alt: "" }) : h("div", { class: "file" }, src.split(".").pop().toUpperCase()),
+      h("code", {}, src),
+      h("div", { class: "bar" },
+        h("button", { class: "small", type: "button", disabled: i === 0, onclick: () => { [p.gallery[i - 1], p.gallery[i]] = [src, p.gallery[i - 1]]; D(); show("projects"); } }, "←"),
+        h("button", { class: "small", type: "button", disabled: i === p.gallery.length - 1, onclick: () => { [p.gallery[i + 1], p.gallery[i]] = [src, p.gallery[i + 1]]; D(); show("projects"); } }, "→"),
+        h("button", { class: "small danger", type: "button", onclick: () => { p.gallery.splice(i, 1); D(); show("projects"); } }, "✕"))));
+  });
+  gal.append(grid);
+  const doUpload = async (files) => {
+    if (!p.slug) { alert("Give the project a title (or slug) first, so uploads go to its own folder."); return; }
+    for (const f of files) {
+      try { const path = await upload(f, `images/projects/${kebab(p.slug)}`); p.gallery.push(path); toast(`Uploaded ${path}`); } catch (err) { alert(`${f.name}: ${err.message}`); }
+    }
+    D(); show("projects");
+  };
+  const picker = h("input", { type: "file", multiple: true, accept: "image/*,video/mp4,video/webm", hidden: true, onchange: (e) => doUpload([...e.target.files]) });
+  const drop = h("div", { class: "drop",
+    ondragover: (e) => { e.preventDefault(); drop.classList.add("over"); },
+    ondragleave: () => drop.classList.remove("over"),
+    ondrop: (e) => { e.preventDefault(); drop.classList.remove("over"); doUpload([...e.dataTransfer.files]); } },
+    "Drag images or videos here, or ", h("button", { class: "small", type: "button", onclick: () => picker.click() }, "choose files"), picker);
+  gal.append(h("div", { style: "margin-top:10px" }, drop));
+  wrap.append(gal);
+  return wrap;
+}
+
+// ---------- uploads tab ----------
+function renderUploads() {
+  const main = $("#main");
+  const out = h("div");
+  const dir = h("input", { type: "text", value: "files" });
+  const picker = h("input", { type: "file", multiple: true, onchange: async (e) => {
+    for (const f of e.target.files) {
+      try { const path = await upload(f, dir.value.trim()); out.prepend(h("div", { class: "ok" }, "Uploaded: ", h("code", {}, path), " ", h("button", { class: "small", type: "button", onclick: () => { navigator.clipboard.writeText(path); toast("Path copied"); } }, "Copy path"))); }
+      catch (err) { out.prepend(h("div", { class: "problems" }, `${f.name}: ${err.message}`)); }
+    }
+    e.target.value = "";
+  } });
+  main.append(h("h2", {}, "Uploads"),
+    h("p", { class: "hint" }, "Upload any file into public/. Use “files” for PDFs (CV, reports) and “images/...” for pictures. Then paste the path into the right field. To replace your CV, upload it to “files” with the same name as the current one (omar-elmetwalli-cv style names), or update the CV path under Experience & CV."),
+    h("div", { class: "card" }, h("label", {}, "Folder inside public/"), dir, h("label", {}, "Files"), picker), out);
+}
+
+// ---------- shell ----------
+function show(id) {
+  tab = id;
+  $("#tabs").replaceChildren(...TABS.map((t) => h("button", { class: t.id === id ? "active" : "", onclick: () => show(t.id) }, t.label + (t.file && dirty.has(t.file) ? " •" : ""))));
+  const main = $("#main");
+  main.replaceChildren();
+  if (id === "projects") renderProjects();
+  else if (id === "uploads") renderUploads();
+  else renderGeneric(TABS.find((t) => t.id === id).file);
+}
+
+$("#saveBtn").onclick = saveAll;
+document.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "s") { e.preventDefault(); if (dirty.size) saveAll(); } });
+$("#checkBtn").onclick = async () => {
+  if (dirty.size && !confirm("You have unsaved changes. Check the saved version anyway?")) return;
+  const main = $("#main");
+  const box = h("div", { class: "card" }, h("strong", {}, "Checking the site (typecheck, build, link check)… this takes a minute or two."));
+  main.prepend(box);
+  $("#checkBtn").disabled = true;
+  try {
+    const r = await api("/api/check", { method: "POST" });
+    box.replaceChildren(h("div", { class: r.ok ? "ok" : "problems" }, r.ok ? "All checks passed. Safe to publish." : "A check failed. See the log below."), h("pre", { class: "log" }, r.log));
+  } catch (e) { box.replaceChildren(h("div", { class: "problems" }, e.message)); }
+  $("#checkBtn").disabled = false;
+};
+$("#publishBtn").onclick = () => {
+  if (dirty.size) { alert("Save your changes first."); return; }
+  $("#pubOut").replaceChildren();
+  $("#publishDlg").showModal();
+};
+$("#pubCancel").onclick = () => $("#publishDlg").close();
+$("#pubGo").onclick = async () => {
+  $("#pubGo").disabled = true;
+  $("#pubOut").replaceChildren(h("p", { class: "hint" }, "Publishing…"));
+  try {
+    const r = await api("/api/publish", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: $("#pubMsg").value }) });
+    $("#pubOut").replaceChildren(h("div", { class: r.ok ? "ok" : "problems" }, r.ok ? "Published. The live site updates in a few minutes." : "Not published."), h("pre", { class: "log" }, r.log));
+  } catch (e) { $("#pubOut").replaceChildren(h("div", { class: "problems" }, e.message)); }
+  $("#pubGo").disabled = false;
+};
+
+(async function init() {
+  const meta = await api("/api/meta");
+  categories = meta.categories;
+  for (const f of meta.files) data[f] = await api(`/api/content/${f}`);
+  updateStatus();
+  show("projects");
+})();
+</script>
+</body>
+</html>

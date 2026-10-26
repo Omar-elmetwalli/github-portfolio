@@ -16,7 +16,8 @@
     "worker:test": "pnpm --dir ai-worker test",
     "check:links": "node scripts/check-links.mjs",
     "test:e2e": "playwright test",
-    "test:e2e:build": "cross-env NEXT_PUBLIC_AI_ENDPOINT=https://ai.mock.test pnpm build"
+    "test:e2e:build": "cross-env NEXT_PUBLIC_AI_ENDPOINT=https://ai.mock.test pnpm build",
+    "admin": "node scripts/admin/server.mjs"
   },
   "dependencies": {
     "katex": "^0.19.1",
