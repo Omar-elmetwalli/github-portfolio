@@ -35,7 +35,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -43,14 +43,10 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
+      # basePath and unoptimized images are set in next.config.ts, so the
+      # action doesn't need to inject them.
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Automatically inject basePath in your Next.js configuration file and disable
-          # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          #
-          # You may remove this line if you want to manage the configuration yourself.
-          static_site_generator: next
 
       - name: Restore cache
         uses: actions/cache@v4
@@ -67,7 +63,11 @@ jobs:
         run: pnpm install
 
       - name: Build with Next.js
-        run: pnpm next build
+        run: pnpm build
+        env:
+          # Set these under Settings -> Secrets and variables -> Actions -> Variables.
+          NEXT_PUBLIC_WEB3FORMS_KEY: ${{ vars.NEXT_PUBLIC_WEB3FORMS_KEY }}
+          NEXT_PUBLIC_GOATCOUNTER_CODE: ${{ vars.NEXT_PUBLIC_GOATCOUNTER_CODE }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

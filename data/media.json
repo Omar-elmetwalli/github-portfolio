@@ -1,0 +1,190 @@
+{
+  "/images/leadership/aiaa/dr-haitham-visit-1.webp": {
+    "width": 1920,
+    "height": 884
+  },
+  "/images/leadership/aiaa/dr-haitham-visit-2.webp": {
+    "width": 1920,
+    "height": 884
+  },
+  "/images/leadership/aiaa/dr-haitham-visit-3.webp": {
+    "width": 1920,
+    "height": 883
+  },
+  "/images/leadership/aiaa/first-webinar.webp": {
+    "width": 1024,
+    "height": 1024
+  },
+  "/images/leadership/aiaa/logo.webp": {
+    "width": 842,
+    "height": 296
+  },
+  "/images/leadership/aiaa/third-webinar.webp": {
+    "width": 1920,
+    "height": 1267
+  },
+  "/images/projects/aquaponic-system/aquaponic-system.webp": {
+    "width": 718,
+    "height": 451
+  },
+  "/images/projects/aquaponic-system/viscometer-1.webp": {
+    "width": 551,
+    "height": 338
+  },
+  "/images/projects/aquaponic-system/viscometer-2.webp": {
+    "width": 369,
+    "height": 198
+  },
+  "/images/projects/aquaponic-system/viscometer-cad.webp": {
+    "width": 454,
+    "height": 479
+  },
+  "/images/projects/cfd-ml-turbulence/adv-neural-operator.webp": {
+    "width": 1920,
+    "height": 1153
+  },
+  "/images/projects/cfd-ml-turbulence/ground-truth.webp": {
+    "width": 1920,
+    "height": 771
+  },
+  "/images/projects/cfd-ml-turbulence/neural-operator.webp": {
+    "width": 1920,
+    "height": 1153
+  },
+  "/images/projects/cold-gas/concept-layout-figure-1.webp": {
+    "width": 1632,
+    "height": 223
+  },
+  "/images/projects/cold-gas/nozzle-geometry-figure-2.webp": {
+    "width": 1050,
+    "height": 505
+  },
+  "/images/projects/cold-gas/performance-plots-figures-4.webp": {
+    "width": 1262,
+    "height": 377
+  },
+  "/images/projects/cold-gas/performance-plots-figures-5.webp": {
+    "width": 1260,
+    "height": 376
+  },
+  "/images/projects/cold-gas/rayleigh-duct-schematic-figure-3.webp": {
+    "width": 1135,
+    "height": 558
+  },
+  "/images/projects/flight-dynamics/fig04-sp-q-initial.webp": {
+    "width": 875,
+    "height": 625
+  },
+  "/images/projects/glider/glider-prototype.webp": {
+    "width": 737,
+    "height": 516
+  },
+  "/images/projects/joukowski-airfoil/aa.webp": {
+    "width": 1250,
+    "height": 875
+  },
+  "/images/projects/joukowski-airfoil/airfoil.webp": {
+    "width": 700,
+    "height": 525
+  },
+  "/images/projects/joukowski-airfoil/cp.webp": {
+    "width": 700,
+    "height": 525
+  },
+  "/images/projects/joukowski-airfoil/v.webp": {
+    "width": 700,
+    "height": 525
+  },
+  "/images/projects/openfoam-airfoil-study/aerodynamic-polars-comparison.webp": {
+    "width": 1920,
+    "height": 800
+  },
+  "/images/projects/openfoam-airfoil-study/cd-vs-aoa.webp": {
+    "width": 1440,
+    "height": 900
+  },
+  "/images/projects/openfoam-airfoil-study/cl-vs-aoa.webp": {
+    "width": 1440,
+    "height": 900
+  },
+  "/images/projects/openfoam-airfoil-study/cl-vs-cd-polar.webp": {
+    "width": 1440,
+    "height": 900
+  },
+  "/images/projects/openfoam-airfoil-study/cm-vs-aoa.webp": {
+    "width": 1440,
+    "height": 900
+  },
+  "/images/projects/openfoam-airfoil-study/ml-vs-cfd-cd-vs-aoa.webp": {
+    "width": 1600,
+    "height": 1200
+  },
+  "/images/projects/openfoam-airfoil-study/ml-vs-cfd-cl-vs-aoa.webp": {
+    "width": 1600,
+    "height": 1200
+  },
+  "/images/projects/openfoam-airfoil-study/ml-vs-cfd-cm-vs-aoa.webp": {
+    "width": 1600,
+    "height": 1200
+  },
+  "/images/projects/openfoam-airfoil-study/ml-vs-cfd-drag-polar.webp": {
+    "width": 1600,
+    "height": 1200
+  },
+  "/images/projects/openfoam-airfoil-study/parity-plots.webp": {
+    "width": 1920,
+    "height": 640
+  },
+  "/images/projects/openfoam-airfoil-study/pressure-field-comparison-m2-0-aoa4.webp": {
+    "width": 1920,
+    "height": 2112
+  },
+  "/images/projects/openfoam-airfoil-study/training-convergence.webp": {
+    "width": 1920,
+    "height": 1152
+  },
+  "/images/projects/openfoam-airfoil-study/velocity-field-comparison-m2-0-aoa4.webp": {
+    "width": 1920,
+    "height": 2112
+  },
+  "/images/projects/ramjet/ramjet-inlet.webp": {
+    "width": 933,
+    "height": 290
+  },
+  "/images/projects/robotic-arm/assembled.webp": {
+    "width": 973,
+    "height": 722
+  },
+  "/images/projects/robotic-arm/gui.webp": {
+    "width": 1141,
+    "height": 642
+  },
+  "/images/projects/robotic-arm/reallife.webp": {
+    "width": 996,
+    "height": 652
+  },
+  "/images/projects/robotic-arm/validation-1.webp": {
+    "width": 587,
+    "height": 637
+  },
+  "/images/projects/turbulent-pipe-flow/dissipation-rate.webp": {
+    "width": 1146,
+    "height": 588
+  },
+  "/images/projects/turbulent-pipe-flow/flow-developed.webp": {
+    "width": 1152,
+    "height": 597
+  },
+  "/images/projects/turbulent-pipe-flow/skin-friction-factor.webp": {
+    "width": 1158,
+    "height": 596
+  },
+  "/images/projects/turbulent-pipe-flow/wall-shear-stress.webp": {
+    "width": 1148,
+    "height": 592
+  },
+  "/images/projects/turbulent-pipe-flow/yplus-wall.webp": {
+    "width": 1152,
+    "height": 592
+  }
+}

@@ -1,3 +1,13 @@
+export interface GalleryItem {
+  src: string;
+  /** Short caption shown under the thumbnail. */
+  caption: string;
+  /** Describes the image for screen readers. Defaults to the caption. */
+  alt?: string;
+  /** Still image shown before a video plays. */
+  poster?: string;
+}
+
 export interface LeadershipRole {
   id: string;
   title: string;
@@ -18,7 +28,7 @@ export interface LeadershipRole {
     facebook?: string;
     instagram?: string;
   };
-  gallery: string[];
+  gallery: GalleryItem[];
 }
 
 export const leadershipRoles: LeadershipRole[] = [
@@ -60,15 +70,15 @@ export const leadershipRoles: LeadershipRole[] = [
       website: 'https://aiaa-zewail.vercel.app/',
       linkedin: 'https://www.linkedin.com/company/aiaa-student-branch-zewail-city/',
     },
+    // TODO(Omar): replace these captions (written from the file names) with real ones.
     gallery: [
-      '/images/leadership/aiaa/logo.png',
-      '/images/leadership/aiaa/dr_haitham_visit_1.jpg',
-      '/images/leadership/aiaa/dr_haitham_visit_2.jpg',
-      '/images/leadership/aiaa/dr_haitham_visit_3.jpg',
-      '/images/leadership/aiaa/first_webinar.png',
-      '/images/leadership/aiaa/third_webinar.png',
-      '/images/leadership/aiaa/aiaa_highlights.mp4',
-      '/images/leadership/aiaa/aiaa_event.mp4',
+      { src: '/images/leadership/aiaa/dr-haitham-visit-1.webp', caption: 'Prof. Haitham Taha visit', alt: 'Prof. Haitham Taha at the AIAA Zewail City symposium (photo 1)' },
+      { src: '/images/leadership/aiaa/dr-haitham-visit-2.webp', caption: 'Prof. Haitham Taha visit', alt: 'Prof. Haitham Taha at the AIAA Zewail City symposium (photo 2)' },
+      { src: '/images/leadership/aiaa/dr-haitham-visit-3.webp', caption: 'Prof. Haitham Taha visit', alt: 'Prof. Haitham Taha at the AIAA Zewail City symposium (photo 3)' },
+      { src: '/images/leadership/aiaa/first-webinar.webp', caption: 'AeroTalk webinar #1', alt: 'Poster for the first AIAA Zewail City webinar' },
+      { src: '/images/leadership/aiaa/third-webinar.webp', caption: 'AeroTalk webinar #3', alt: 'Poster for the third AIAA Zewail City webinar' },
+      { src: '/images/leadership/aiaa/aiaa-highlights.mp4', caption: 'Branch highlights (video)', poster: '/images/leadership/aiaa/dr-haitham-visit-1.webp' },
+      { src: '/images/leadership/aiaa/aiaa-event.mp4', caption: 'Branch event (video)', poster: '/images/leadership/aiaa/dr-haitham-visit-2.webp' },
     ],
   },
 ];

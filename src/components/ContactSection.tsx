@@ -3,204 +3,261 @@
 import { useState } from "react";
 import { profile } from "../../data/profile";
 
+/** Web3Forms access key. Public by design (it only allows sending to Omar's inbox). */
+const FORM_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type Fields = { name: string; email: string; subject: string; message: string };
+type Status = "idle" | "sending" | "success" | "error";
+
+function validate(f: Fields): Partial<Record<keyof Fields, string>> {
+  const errors: Partial<Record<keyof Fields, string>> = {};
+  if (f.name.trim().length < 2) errors.name = "Please enter your name.";
+  if (!EMAIL_RE.test(f.email.trim())) errors.email = "Please enter a valid email address.";
+  if (f.message.trim().length < 10) errors.message = "Please write at least 10 characters.";
+  return errors;
+}
+
+const mailtoHref = (f?: Fields) =>
+  f
+    ? `mailto:${profile.email}?subject=${encodeURIComponent(f.subject || `Message from ${f.name}`)}&body=${encodeURIComponent(
+        `${f.message}\n\n${f.name} <${f.email}>`
+      )}`
+    : `mailto:${profile.email}`;
+
 export default function ContactSection() {
-  const [copiedType, setCopiedType] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
-  const [sentNotice, setSentNotice] = useState(false);
+  const [fields, setFields] = useState<Fields>({ name: "", email: "", subject: "", message: "" });
+  const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
+  const [status, setStatus] = useState<Status>("idle");
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const copyToClipboard = (text: string, type: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedType(type);
-    setTimeout(() => setCopiedType(null), 2500);
+  const copy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(text);
+      setTimeout(() => setCopied(null), 2500);
+    } catch {
+      // Clipboard can be blocked; the address is still visible to copy by hand.
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const update = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setFields((f) => ({ ...f, [key]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const mailtoUrl = `mailto:${profile.email}?subject=${encodeURIComponent(
-      formData.subject || `Collaboration inquiry from ${formData.name}`
-    )}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    )}`;
-    window.location.href = mailtoUrl;
-    setSentNotice(true);
-    setTimeout(() => setSentNotice(false), 4000);
+    const found = validate(fields);
+    setErrors(found);
+    if (Object.keys(found).length) return;
+
+    // No form service configured: fall back to the visitor's mail app.
+    if (!FORM_KEY) {
+      window.location.href = mailtoHref(fields);
+      return;
+    }
+
+    const honeypot = (e.currentTarget.elements.namedItem("botcheck") as HTMLInputElement | null)?.checked;
+    if (honeypot) return;
+
+    setStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: FORM_KEY,
+          subject: fields.subject || `Portfolio message from ${fields.name}`,
+          from_name: fields.name,
+          name: fields.name,
+          email: fields.email,
+          message: fields.message,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === false) throw new Error("send failed");
+      setStatus("success");
+      setFields({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setStatus("error");
+    }
   };
+
+  const inputClass = (key: keyof Fields) =>
+    `w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-gray-800/60 text-gray-900 dark:text-white text-sm placeholder-gray-500 dark:placeholder-gray-400 ${
+      errors[key] ? "border-red-600 dark:border-red-400" : "border-gray-300 dark:border-gray-700"
+    }`;
+
+  const fieldError = (key: keyof Fields) =>
+    errors[key] ? (
+      <p id={`${key}-error`} className="mt-1 text-xs font-medium text-red-700 dark:text-red-300">
+        {errors[key]}
+      </p>
+    ) : null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      {/* Left: Contact Info & Quick Copy Pills */}
-      <div className="lg:col-span-5 space-y-6">
+      <div className="lg:col-span-5">
         <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border border-gray-200 dark:border-cyan-500/20">
           <div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Let&apos;s Connect & Collaborate
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              Open to research collaborations, computational fluid dynamics & scientific machine learning projects, graduate research discussions, and aerospace engineering opportunities.
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-display">Let&apos;s connect</h3>
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              Open to PhD positions, research collaborations in CFD and scientific machine learning, and aerospace R&D roles.
             </p>
           </div>
 
-          <div className="space-y-3">
-            {/* Email Card with Copy button */}
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80 flex items-center justify-between gap-3 group">
-              <div className="min-w-0">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                  Academic & Primary Email
-                </span>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white truncate block">
-                  {profile.email}
-                </span>
-              </div>
-              <button
-                onClick={() => copyToClipboard(profile.email, "email")}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors flex-shrink-0 cursor-pointer shadow-sm"
+          <ul className="space-y-3">
+            {[
+              { label: "Email", value: profile.email, href: `mailto:${profile.email}` },
+              ...profile.academicEmails.map((a) => ({ label: `${a.label} email`, value: a.address, href: `mailto:${a.address}` })),
+              { label: "Phone / WhatsApp", value: profile.phone, href: `tel:${profile.phone.replace(/\s+/g, "")}` },
+            ].map((item) => (
+              <li
+                key={item.value}
+                className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80 flex items-center justify-between gap-3"
               >
-                {copiedType === "email" ? "Copied! ✓" : "Copy"}
-              </button>
-            </div>
+                <div className="min-w-0">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+                    {item.label}
+                  </span>
+                  <a href={item.href} className="text-sm font-semibold text-gray-900 dark:text-white break-all hover:underline">
+                    {item.value}
+                  </a>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copy(item.value)}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 flex-shrink-0"
+                >
+                  {copied === item.value ? "Copied ✓" : "Copy"}
+                  <span className="sr-only"> {item.label}</span>
+                </button>
+              </li>
+            ))}
+            <li className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+                Affiliation
+              </span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">{profile.affiliation.location}</span>
+            </li>
+          </ul>
 
-            {/* Phone Card with Copy button */}
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80 flex items-center justify-between gap-3 group">
-              <div className="min-w-0">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                  Phone / WhatsApp
-                </span>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white truncate block">
-                  {profile.phone}
-                </span>
-              </div>
-              <button
-                onClick={() => copyToClipboard(profile.phone, "phone")}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0 cursor-pointer"
-              >
-                {copiedType === "phone" ? "Copied! ✓" : "Copy"}
-              </button>
-            </div>
-
-            {/* Location */}
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/80 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-cyan-400 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                  Affiliation Base
-                </span>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Zewail City of Science and Technology, Giza, Egypt
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Social Profiles */}
           <div className="pt-2 flex flex-wrap gap-3">
             <a
               href={profile.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-[#0A66C2] text-white hover:opacity-90 transition-opacity shadow-sm"
+              className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-[#0A66C2] text-white hover:opacity-90"
             >
-              LinkedIn Profile
+              LinkedIn
             </a>
             <a
               href={profile.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-sm"
+              className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700"
             >
-              GitHub Code
+              GitHub
             </a>
           </div>
         </div>
       </div>
 
-      {/* Right: Instant Interactive Contact Form */}
       <div className="lg:col-span-7">
         <form
           onSubmit={handleSubmit}
+          noValidate
+          aria-labelledby="contact-form-title"
           className="glass-panel p-6 sm:p-8 rounded-3xl border border-gray-200 dark:border-cyan-500/20 space-y-4"
         >
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Send a Direct Message
+          <h3 id="contact-form-title" className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-display">
+            Send a message
           </h3>
+
+          {/* Honeypot: hidden from people, often filled in by bots. */}
+          <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                Your Name
+              <label htmlFor="contact-name" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
+                Your name
               </label>
               <input
+                id="contact-name"
                 type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Dr. Jane Doe / Eng. John"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm outline-none transition-all"
+                autoComplete="name"
+                value={fields.name}
+                onChange={update("name")}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "name-error" : undefined}
+                className={inputClass("name")}
               />
+              {fieldError("name")}
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                Your Email
+              <label htmlFor="contact-email" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
+                Your email
               </label>
               <input
+                id="contact-email"
                 type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="colleague@institution.edu"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm outline-none transition-all"
+                autoComplete="email"
+                value={fields.email}
+                onChange={update("email")}
+                placeholder="name@university.edu"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
+                className={inputClass("email")}
               />
+              {fieldError("email")}
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-              Subject / Topic
+            <label htmlFor="contact-subject" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
+              Subject <span className="font-normal text-gray-600 dark:text-gray-400">(optional)</span>
             </label>
-            <input
-              type="text"
-              required
-              value={formData.subject}
-              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              placeholder="Research collaboration on CFD / Scientific Machine Learning"
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm outline-none transition-all"
-            />
+            <input id="contact-subject" type="text" value={fields.subject} onChange={update("subject")} className={inputClass("subject")} />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+            <label htmlFor="contact-message" className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1.5">
               Message
             </label>
             <textarea
-              required
-              rows={4}
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Write your message or project inquiry here..."
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm outline-none transition-all resize-none"
+              id="contact-message"
+              rows={5}
+              value={fields.message}
+              onChange={update("message")}
+              aria-invalid={!!errors.message}
+              aria-describedby={errors.message ? "message-error" : undefined}
+              className={`${inputClass("message")} resize-y`}
             />
+            {fieldError("message")}
           </div>
 
-          <div className="pt-2 flex items-center justify-between">
+          <div className="pt-2 flex flex-wrap items-center gap-4">
             <button
               type="submit"
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-md shadow-blue-500/20 cursor-pointer flex items-center gap-2"
+              disabled={status === "sending"}
+              className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 disabled:opacity-60 text-white font-bold text-sm transition-colors"
             >
-              <span>Dispatch Message</span>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              {status === "sending" ? "Sending…" : FORM_KEY ? "Send message" : "Open in email app"}
             </button>
 
-            {sentNotice && (
-              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 animate-fade-in">
-                Opening your email client...
-              </span>
-            )}
+            <p role="status" aria-live="polite" className="text-sm font-medium">
+              {status === "success" && (
+                <span className="text-emerald-800 dark:text-emerald-300">Thanks! Your message was sent.</span>
+              )}
+              {status === "error" && (
+                <span className="text-red-700 dark:text-red-300">
+                  Sending failed.{" "}
+                  <a href={mailtoHref(fields)} className="underline">
+                    Email me directly
+                  </a>{" "}
+                  instead.
+                </span>
+              )}
+            </p>
           </div>
         </form>
       </div>

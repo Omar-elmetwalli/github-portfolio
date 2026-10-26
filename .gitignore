@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local browser screenshots
+.browser_screenshots/
+
+# allow the committed example env file
+!.env.example

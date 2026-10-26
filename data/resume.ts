@@ -76,11 +76,6 @@ export const resume = {
   ],
   certifications: [
     {
-      name: "3rd Place Worldwide, eVTOL Design Category",
-      issuer: "ROTORTHON International Competition",
-      date: "2024",
-    },
-    {
       name: "Certified SolidWorks Associate (CSWA)",
       issuer: "Dassault Systèmes",
       date: "2023",

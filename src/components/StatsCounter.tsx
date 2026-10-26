@@ -1,137 +1,74 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Stat } from "../../data/profile";
 
-interface StatItem {
-  value: number;
-  suffix: string;
-  decimals?: number;
-  label: string;
-  sublabel: string;
-}
+const format = (value: number, decimals?: number) =>
+  decimals !== undefined
+    ? value.toFixed(decimals)
+    : Math.round(value).toLocaleString("en-US");
 
-const stats: StatItem[] = [
-  {
-    value: 81,
-    suffix: "",
-    label: "Parametric RANS Cases",
-    sublabel: "OpenFOAM v2306 (Camber & AoA Sweep)",
-  },
-  {
-    value: 12000,
-    suffix: "×",
-    label: "PINN Speedup",
-    sublabel: "< 5 ms GPU flow field reconstruction",
-  },
-  {
-    value: 0.9992,
-    suffix: "",
-    decimals: 4,
-    label: "GPR Surrogate R²",
-    sublabel: "Multi-output aerodynamic force fidelity",
-  },
-  {
-    value: 200,
-    suffix: "+",
-    label: "AIAA Branch Members",
-    sublabel: "Founded Egypt's 1st Student Branch",
-  },
-];
-
-export default function StatsCounter() {
-  const [isInView, setIsInView] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+/**
+ * The static HTML always contains the final numbers (for crawlers, link
+ * previews, and no-JS visitors). On the client, the count-up runs only when the
+ * stats scroll into view after load, and never with reduced motion.
+ */
+export default function StatsCounter({ stats }: { stats: Stat[] }) {
+  const containerRef = useRef<HTMLDListElement | null>(null);
+  const [progress, setProgress] = useState(1);
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    let frame = 0;
+    let first = true;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
+        // Already visible on load: keep the final values, no animation.
+        if (first) {
+          first = false;
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            return;
+          }
+          return;
         }
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / 1400);
+          setProgress(t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+          if (t < 1) frame = requestAnimationFrame(tick);
+        };
+        frame = requestAnimationFrame(tick);
       },
-      { threshold: 0.25 }
+      { threshold: 0.4 }
     );
-
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 my-12"
-    >
-      {stats.map((stat, idx) => (
-        <StatCard key={idx} stat={stat} active={isInView} delay={idx * 150} />
+    <dl ref={containerRef} className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 my-12">
+      {stats.map((stat) => (
+        <div
+          key={stat.label}
+          className="glass-panel p-5 rounded-2xl relative overflow-hidden text-left flex flex-col"
+        >
+          <div aria-hidden="true" className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-70" />
+          <dt className="order-2 text-sm font-semibold text-gray-800 dark:text-gray-200 mt-1">{stat.label}</dt>
+          <dd className="order-1 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight font-mono tabular-nums">
+            {format(stat.value * progress, stat.decimals)}
+            {stat.suffix && <span className="text-blue-700 dark:text-cyan-300 text-2xl ml-0.5">{stat.suffix}</span>}
+          </dd>
+          <dd className="order-3 text-xs text-gray-600 dark:text-gray-400 mt-0.5">{stat.sublabel}</dd>
+        </div>
       ))}
-    </div>
-  );
-}
-
-function StatCard({
-  stat,
-  active,
-  delay,
-}: {
-  stat: StatItem;
-  active: boolean;
-  delay: number;
-}) {
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    if (!active) return;
-
-    const timer = setTimeout(() => {
-      let start = 0;
-      const duration = 1600;
-      const startTime = performance.now();
-
-      function update(now: number) {
-        const elapsed = now - startTime;
-        const progress = Math.min(1, elapsed / duration);
-        // Ease-out expo
-        const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-        const current = start + (stat.value - start) * ease;
-        setDisplayValue(current);
-
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        } else {
-          setDisplayValue(stat.value);
-        }
-      }
-
-      requestAnimationFrame(update);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [active, stat.value, delay]);
-
-  const formatted =
-    stat.decimals !== undefined
-      ? displayValue.toFixed(stat.decimals)
-      : Math.floor(displayValue).toLocaleString();
-
-  return (
-    <div className="glass-panel p-5 rounded-2xl relative overflow-hidden group hover:border-blue-500/40 transition-all duration-300">
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-60 group-hover:opacity-100 transition-opacity" />
-      <div className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-baseline">
-        <span>{formatted}</span>
-        <span className="text-blue-600 dark:text-cyan-400 text-2xl font-bold ml-0.5">
-          {stat.suffix}
-        </span>
-      </div>
-      <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mt-1">
-        {stat.label}
-      </div>
-      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">
-        {stat.sublabel}
-      </div>
-    </div>
+    </dl>
   );
 }

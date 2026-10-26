@@ -25,6 +25,9 @@ export default function StreamlineCanvas() {
 
     let animationFrameId: number;
     let isVisible = true;
+    let running = false;
+    // With reduced motion, draw one still frame and stop.
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let width = (canvas.width = canvas.parentElement?.clientWidth || window.innerWidth);
     let height = (canvas.height = canvas.parentElement?.clientHeight || window.innerHeight);
 
@@ -96,6 +99,7 @@ export default function StreamlineCanvas() {
         entries.forEach((entry) => {
           isVisible = entry.isIntersecting;
         });
+        start();
       },
       { threshold: 0.05 }
     );
@@ -104,14 +108,16 @@ export default function StreamlineCanvas() {
     // Pause when tab is not active
     const handleVisibility = () => {
       isVisible = !document.hidden;
+      start();
     };
     document.addEventListener("visibilitychange", handleVisibility);
 
     function render() {
       if (!ctx) return;
 
-      if (!isVisible) {
-        animationFrameId = requestAnimationFrame(render);
+      // Off-screen or hidden tab: stop the loop until start() is called again.
+      if (!isVisible && !reducedMotion) {
+        running = false;
         return;
       }
 
@@ -196,10 +202,17 @@ export default function StreamlineCanvas() {
         }
       }
 
+      if (!reducedMotion) animationFrameId = requestAnimationFrame(render);
+    }
+
+    function start() {
+      if (running || !isVisible || reducedMotion) return;
+      running = true;
       animationFrameId = requestAnimationFrame(render);
     }
 
-    render();
+    if (reducedMotion) render();
+    else start();
 
     return () => {
       cancelAnimationFrame(animationFrameId);

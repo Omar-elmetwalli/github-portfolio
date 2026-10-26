@@ -3,14 +3,29 @@ export interface ProjectSection {
   content: string;
 }
 
+export const CATEGORIES = [
+  "Scientific ML",
+  "Fluid Mechanics & CFD",
+  "Aerodynamics & Propulsion",
+  "Dynamics & Controls",
+  "Mechanical Design & Manufacturing",
+  "Software & Computing",
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
 export interface Project {
   slug: string;
   title: string;
   date: string;
+  /** Used by the project filter. Labels must come from CATEGORIES. */
+  categories: Category[];
   tags: string[];
   tools: string[];
   summary: string;
   confidential?: boolean;
+  /** Shown instead of summary/sections when confidential is true. */
+  publicSummary?: string;
   sections: ProjectSection[];
   links: {
     github?: string;
@@ -26,6 +41,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     "slug": "ml-augmented-turbulence-modeling",
+    "categories": ["Scientific ML","Fluid Mechanics & CFD"],
     "title": "Physics-Informed Deep Learning & Neural Operators for Multiscale Turbulence Modeling",
     "date": "2024 \u2014 Present",
     "tags": [
@@ -45,6 +61,7 @@ export const projects: Project[] = [
       "FFT"
     ],
     "confidential": true,
+    "publicSummary": "Developing physics-informed deep learning models (3D U-Nets and neural operators) for high-fidelity turbulence and wind-farm LES data, in collaboration with researchers at UT Dallas and Stevens Institute. A manuscript is in preparation; technical details will be shared after publication.",
     "summary": "Developing physics-informed deep learning architectures (including 3D U-Nets, Progressive Decoders, and Neural Operators) for high-fidelity turbulence datasets (Johns Hopkins Turbulence Databases) and wind-farm LES. Enforcing exact physical conservation laws: momentum-deficit conservation, actuator-line-model body-force conditioning, vorticity transport constraints, Leray projection, and adaptive correction modules. Co-authoring manuscript with Dr. Mahmoud Ayyad (Stevens Institute) and Ahmed Hamada (UT Dallas).",
     "sections": [
       {
@@ -66,14 +83,15 @@ export const projects: Project[] = [
     ],
     "links": {},
     "gallery": [
-      "/images/projects/cfd-ml-turbulence/ground_truth.png",
-      "/images/projects/cfd-ml-turbulence/neural_operator.png",
-      "/images/projects/cfd-ml-turbulence/adv_neural_operator.png",
-      "/images/projects/cfd-ml-turbulence/cfd_ml_simulation.mp4"
+      "/images/projects/cfd-ml-turbulence/ground-truth.webp",
+      "/images/projects/cfd-ml-turbulence/neural-operator.webp",
+      "/images/projects/cfd-ml-turbulence/adv-neural-operator.webp",
+      "/images/projects/cfd-ml-turbulence/cfd-ml-simulation.mp4"
     ]
   },
   {
     "slug": "openfoam-parametric-airfoil-study",
+    "categories": ["Scientific ML","Fluid Mechanics & CFD","Aerodynamics & Propulsion"],
     "title": "Parametric NACA Airfoil OpenFOAM CFD Study, GPR Surrogates & Physics-Informed Neural Networks (PINN)",
     "date": "2024-11 — Present",
     "tags": [
@@ -127,20 +145,21 @@ export const projects: Project[] = [
       "reportTitle": "Read PINN Research Report (PDF)"
     },
     "gallery": [
-      "/images/projects/openfoam-airfoil-study/aerodynamic_polars_comparison.png",
-      "/images/projects/openfoam-airfoil-study/velocity_field_comparison_m2.0_AoA4.png",
-      "/images/projects/openfoam-airfoil-study/pressure_field_comparison_m2.0_AoA4.png",
-      "/images/projects/openfoam-airfoil-study/training_convergence.png",
-      "/images/projects/openfoam-airfoil-study/parity_plots.png",
-      "/images/projects/openfoam-airfoil-study/ml_vs_cfd_drag_polar.png",
-      "/images/projects/openfoam-airfoil-study/ml_vs_cfd_cl_vs_aoa.png",
-      "/images/projects/openfoam-airfoil-study/cl_vs_aoa.png",
-      "/images/projects/openfoam-airfoil-study/cd_vs_aoa.png",
-      "/images/projects/openfoam-airfoil-study/cm_vs_aoa.png"
+      "/images/projects/openfoam-airfoil-study/aerodynamic-polars-comparison.webp",
+      "/images/projects/openfoam-airfoil-study/velocity-field-comparison-m2-0-aoa4.webp",
+      "/images/projects/openfoam-airfoil-study/pressure-field-comparison-m2-0-aoa4.webp",
+      "/images/projects/openfoam-airfoil-study/training-convergence.webp",
+      "/images/projects/openfoam-airfoil-study/parity-plots.webp",
+      "/images/projects/openfoam-airfoil-study/ml-vs-cfd-drag-polar.webp",
+      "/images/projects/openfoam-airfoil-study/ml-vs-cfd-cl-vs-aoa.webp",
+      "/images/projects/openfoam-airfoil-study/cl-vs-aoa.webp",
+      "/images/projects/openfoam-airfoil-study/cd-vs-aoa.webp",
+      "/images/projects/openfoam-airfoil-study/cm-vs-aoa.webp"
     ]
   },
   {
     "slug": "boeing-747-flight-dynamics-autopilot",
+    "categories": ["Dynamics & Controls","Aerodynamics & Propulsion"],
     "title": "Boeing 747 Flight Dynamics \u2014 Modal Stability & Classical Autopilot Design",
     "date": "2026-03",
     "tags": [
@@ -178,11 +197,12 @@ export const projects: Project[] = [
       "paper": "/files/Flight_Dynamics_Project.pdf"
     },
     "gallery": [
-      "/images/projects/flight-dynamics/Fig04_SP_q_Initial.png"
+      "/images/projects/flight-dynamics/fig04-sp-q-initial.webp"
     ]
   },
   {
     "slug": "joukowski-airfoil-aerodynamics",
+    "categories": ["Aerodynamics & Propulsion","Fluid Mechanics & CFD"],
     "title": "Joukowski Airfoil Aerodynamics \u2014 Conformal Mapping Potential Flow vs. CFD",
     "date": "2025-11",
     "tags": [
@@ -213,14 +233,15 @@ export const projects: Project[] = [
     ],
     "links": {},
     "gallery": [
-      "/images/projects/joukowski-airfoil/CP.jpg",
-      "/images/projects/joukowski-airfoil/AIFOIL.jpg",
-      "/images/projects/joukowski-airfoil/V.jpg",
-      "/images/projects/joukowski-airfoil/aa.jpg"
+      "/images/projects/joukowski-airfoil/cp.webp",
+      "/images/projects/joukowski-airfoil/airfoil.webp",
+      "/images/projects/joukowski-airfoil/v.webp",
+      "/images/projects/joukowski-airfoil/aa.webp"
     ]
   },
   {
     "slug": "turbulent-pipe-flow-cfd",
+    "categories": ["Fluid Mechanics & CFD"],
     "title": "Turbulent Pipe Flow CFD \u2014 k-omega SST Boundary Layer & Entrance Length Simulation",
     "date": "2024-12",
     "tags": [
@@ -253,15 +274,16 @@ export const projects: Project[] = [
       "paper": "/files/Turbulent_Flow_CFD_Report.pdf"
     },
     "gallery": [
-      "/images/projects/turbulent-pipe-flow/wall_shear_stress.png",
-      "/images/projects/turbulent-pipe-flow/dissipation_rate.png",
-      "/images/projects/turbulent-pipe-flow/flow_developed.png",
-      "/images/projects/turbulent-pipe-flow/skin_friction_factor.png",
-      "/images/projects/turbulent-pipe-flow/yplus_wall.png"
+      "/images/projects/turbulent-pipe-flow/wall-shear-stress.webp",
+      "/images/projects/turbulent-pipe-flow/dissipation-rate.webp",
+      "/images/projects/turbulent-pipe-flow/flow-developed.webp",
+      "/images/projects/turbulent-pipe-flow/skin-friction-factor.webp",
+      "/images/projects/turbulent-pipe-flow/yplus-wall.webp"
     ]
   },
   {
     "slug": "cold-gas-rocket-engine",
+    "categories": ["Aerodynamics & Propulsion"],
     "title": "Cold Gas Rocket Engine \u2014 Nozzle Design & Blowdown Simulation",
     "date": "2026-01",
     "tags": [
@@ -292,15 +314,16 @@ export const projects: Project[] = [
       "paper": "/files/gasdynamics_rocketproject.pdf"
     },
     "gallery": [
-      "/images/projects/coldgas/Concept layout (Figure 1).png",
-      "/images/projects/coldgas/Nozzle geometry (Figure 2).png",
-      "/images/projects/coldgas/Rayleigh duct schematic (Figure 3) .png",
-      "/images/projects/coldgas/Performance plots (Figures 4.png",
-      "/images/projects/coldgas/Performance plots (Figures 5).png"
+      "/images/projects/cold-gas/concept-layout-figure-1.webp",
+      "/images/projects/cold-gas/nozzle-geometry-figure-2.webp",
+      "/images/projects/cold-gas/rayleigh-duct-schematic-figure-3.webp",
+      "/images/projects/cold-gas/performance-plots-figures-4.webp",
+      "/images/projects/cold-gas/performance-plots-figures-5.webp"
     ]
   },
   {
     "slug": "ramjet-engine-inlet-optimization",
+    "categories": ["Aerodynamics & Propulsion"],
     "title": "Ramjet Engine \u2014 Two-Ramp Inlet & Nozzle Optimization",
     "date": "2024-01",
     "tags": [
@@ -328,14 +351,15 @@ export const projects: Project[] = [
       }
     ],
     "links": {
-      "paper": "/files/gasdynamics_scramjetProject (1).pdf"
+      "paper": "/files/gasdynamics_ramjet_project.pdf"
     },
     "gallery": [
-      "/images/projects/scramjet/scremjet.png"
+      "/images/projects/ramjet/ramjet-inlet.webp"
     ]
   },
   {
     "slug": "3dof-planar-robotic-arm",
+    "categories": ["Mechanical Design & Manufacturing"],
     "title": "3-DOF Planar Robotic Arm \u2014 Design, Kinematics & Prototype",
     "date": "2025-12",
     "tags": [
@@ -370,12 +394,13 @@ export const projects: Project[] = [
       "paper": "/files/Mechatronics_Project_Report.pdf"
     },
     "gallery": [
-      "/images/projects/robotic-arm/gui.png",
-      "/images/projects/robotic-arm/assembled.jpg"
+      "/images/projects/robotic-arm/gui.webp",
+      "/images/projects/robotic-arm/assembled.webp"
     ]
   },
   {
     "slug": "active-suspension-lqr",
+    "categories": ["Dynamics & Controls"],
     "title": "Active Suspension (Quarter-Car) \u2014 State Feedback & LQR",
     "date": "2023-11",
     "tags": [
@@ -405,13 +430,11 @@ export const projects: Project[] = [
       }
     ],
     "links": {},
-    "gallery": [
-      "/images/projects/suspension-1.jpg",
-      "/images/projects/suspension-2.jpg"
-    ]
+    "gallery": []
   },
   {
     "slug": "aquaponic-system-fluid-mechanics",
+    "categories": ["Fluid Mechanics & CFD","Mechanical Design & Manufacturing"],
     "title": "Aquaponic Recirculating System \u2014 Fluid Mechanics Modeling & Hydraulic Sizing",
     "date": "2024-05",
     "tags": [
@@ -448,15 +471,16 @@ export const projects: Project[] = [
       "paper": "/files/ENGR207_Aquaponics_Project_Report.pdf"
     },
     "gallery": [
-      "/images/projects/aquaponic-system/aquaponic_system.png",
-      "/images/projects/aquaponic-system/viscometer_cad.png",
-      "/images/projects/aquaponic-system/viscometer_1.png",
-      "/images/projects/aquaponic-system/viscometer_2.png",
-      "/images/projects/aquaponic-system/viscometer_experiment.mp4"
+      "/images/projects/aquaponic-system/aquaponic-system.webp",
+      "/images/projects/aquaponic-system/viscometer-cad.webp",
+      "/images/projects/aquaponic-system/viscometer-1.webp",
+      "/images/projects/aquaponic-system/viscometer-2.webp",
+      "/images/projects/aquaponic-system/viscometer-experiment.mp4"
     ]
   },
   {
     "slug": "two-stage-gearbox-design",
+    "categories": ["Mechanical Design & Manufacturing"],
     "title": "Two-Stage Industrial Speed Multiplier / Reducer Gearbox Design & Drafting",
     "date": "2025-05",
     "tags": [
@@ -492,6 +516,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "shaft-assembly-power-transmission",
+    "categories": ["Mechanical Design & Manufacturing"],
     "title": "Power Transmission Drive Shaft Assembly \u2014 Exploded View & BOM Drafting",
     "date": "2024-12",
     "tags": [
@@ -527,6 +552,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "rocket-workshop-cnc-machining",
+    "categories": ["Mechanical Design & Manufacturing"],
     "title": "DMU 50 5-Axis CNC Machining & Process Planning for Rocket Workpieces",
     "date": "2024-03",
     "tags": [
@@ -562,6 +588,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "inverted-pendulum-segway-control",
+    "categories": ["Dynamics & Controls"],
     "title": "Segway Inverted Pendulum Mobile Robot \u2014 Root Locus Control & Pole Placement",
     "date": "2024-04",
     "tags": [
@@ -595,6 +622,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "hospital-logistics-data-structures",
+    "categories": ["Software & Computing"],
     "title": "Multi-Hospital Emergency Dispatch & Patient Triage \u2014 C++ Object-Oriented Simulation",
     "date": "2024-05",
     "tags": [
@@ -629,6 +657,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "variational-quantum-classifier",
+    "categories": ["Software & Computing"],
     "title": "Variational Quantum Classifier (VQC) \u2014 Quantum Circuit Machine Learning",
     "date": "2024-06",
     "tags": [
@@ -663,6 +692,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "balsa-wood-glider-prototype",
+    "categories": ["Aerodynamics & Propulsion"],
     "title": "Hand-Launched Balsa Wood Glider \u2014 Aerodynamic Design & Flight Prototyping",
     "date": "2023-12",
     "tags": [
@@ -694,26 +724,21 @@ export const projects: Project[] = [
     ],
     "links": {},
     "gallery": [
-      "/images/projects/glider/glider_prototype.png"
+      "/images/projects/glider/glider-prototype.webp"
     ]
   }
 ];
 
-export const getAllTags = (): string[] => {
-  const tagSet = new Set<string>();
-  projects.forEach((project) => {
-    project.tags.forEach((tag) => tagSet.add(tag));
-  });
-  return Array.from(tagSet).sort();
-};
-
-export const getProjectBySlug = (slug: string): Project | undefined => {
-  return projects.find((project) => project.slug === slug);
-};
-
-export const filterProjectsByTags = (tags: string[]): Project[] => {
-  if (tags.length === 0) return projects;
-  return projects.filter((project) =>
-    tags.some((tag) => project.tags.includes(tag))
+/**
+ * Projects safe to show publicly. Confidential projects keep only their
+ * publicSummary: the detailed summary and sections never leave the server.
+ */
+export const getPublicProjects = (): Project[] =>
+  projects.map((p) =>
+    p.confidential
+      ? { ...p, summary: p.publicSummary ?? "Details available after publication.", sections: [] }
+      : p
   );
-};
+
+export const getPublicProjectBySlug = (slug: string): Project | undefined =>
+  getPublicProjects().find((p) => p.slug === slug);
