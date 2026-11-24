@@ -500,7 +500,7 @@
       },
       {
         "title": "Challenge: A Shaft Too Stiff to Measure",
-        "content": "The 3D-printed shaft was too solid: under the fluid torque it barely twisted, so the strain gauge could not detect the deformation and the readings were not accurate. Two fixes followed from this. First, use a hollow or thin-walled shaft so the torque produces a measurable twist, instead of a solid, rigid one. Second, place the strain gauge where it captures the twisting deformation, aligned with the twist for maximum sensitivity."
+        "content": "The 3D-printed shaft was too solid: under the fluid torque it barely twisted, so the strain gauge could not detect the deformation. In testing, the gauges gave no meaningful readings, only random numbers, mainly due to noise and electrostatic interference. Two fixes followed from this. First, use a hollow or thin-walled shaft so the torque produces a measurable twist, instead of a solid, rigid one. Second, place the strain gauge where it captures the twisting deformation, aligned with the twist for maximum sensitivity."
       },
       {
         "title": "Lessons Learned & Next Steps",
@@ -511,6 +511,7 @@
     "gallery": [
       "/images/projects/viscometer/viscometer-concept.webp",
       "/images/projects/viscometer/viscometer-equations.webp",
+      "/images/projects/viscometer/viscometer-final-assembly.mp4",
       "/images/projects/viscometer/viscometer-demo.mp4",
       "/images/projects/viscometer/viscometer-test-run.mp4"
     ]
