@@ -460,11 +460,59 @@
       "paper": "/files/ENGR207_Aquaponics_Project_Report.pdf"
     },
     "gallery": [
-      "/images/projects/aquaponic-system/aquaponic-system.webp",
-      "/images/projects/aquaponic-system/viscometer-cad.webp",
-      "/images/projects/aquaponic-system/viscometer-1.webp",
-      "/images/projects/aquaponic-system/viscometer-2.webp",
-      "/images/projects/aquaponic-system/viscometer-experiment.mp4"
+      "/images/projects/aquaponic-system/aquaponic-system.webp"
+    ]
+  },
+  {
+    "slug": "rotational-viscometer-strain-gauge",
+    "categories": [
+      "Fluid Mechanics & CFD",
+      "Mechanical Design & Manufacturing"
+    ],
+    "title": "Rotational Viscometer — Strain-Gauge Torque Sensing with a Wi-Fi Microcontroller",
+    "date": "2024-06",
+    "tags": [
+      "Viscometry",
+      "Fluid Properties",
+      "Instrumentation",
+      "Strain Gauge",
+      "Wheatstone Bridge",
+      "Embedded Systems",
+      "3D Printing"
+    ],
+    "tools": [
+      "NodeMCU ESP8266",
+      "HX711 Load-Cell Amplifier",
+      "Strain Gauge",
+      "IR Photoelectric Encoder",
+      "Arduino",
+      "3D Printing"
+    ],
+    "summary": "Built a rotational viscometer that infers a fluid's viscosity from the torque on a motor-driven shaft spinning in the fluid. A strain gauge on the shaft senses its twist, an HX711 amplifier turns the gauge's resistance change into a voltage, and a NodeMCU ESP8266 streams the readings over Wi-Fi to a computer or phone. Testing showed the 3D-printed shaft was too stiff for the gauge to register its twist, which led to a redesign plan for the shaft and the gauge placement.",
+    "sections": [
+      {
+        "title": "Measurement Principle",
+        "content": "A DC motor spins a shaft of radius $R$ inside the test fluid, which fills a thin gap of width $l$ between the shaft and a stationary cylinder. The fluid resists the motion with a viscous torque $T$ that twists the shaft slightly; a strain gauge bonded to the shaft changes resistance in proportion to that twist, so the torque can be calculated. Assuming a linear velocity profile across the gap, the surface speed is $V = \\omega R$ and the shear rate is $\\frac{du}{dy} = \\frac{V}{l}$, so the viscosity follows from the measured torque and rotational speed as $\\mu = \\frac{T}{\\frac{du}{dy} R A}$, where $A$ is the wetted shaft area."
+      },
+      {
+        "title": "Sensing & Electronics",
+        "content": "The strain gauge sits in a Wheatstone bridge, and an HX711 load-cell amplifier converts its resistance change into a voltage signal. A NodeMCU ESP8266 reads the signal and sends the data over Wi-Fi to a computer, phone, or any other device. The shaft is driven by a 5 V DC motor, with a 3.7 V battery on board. An IR photoelectric encoder (3-pin) was used once to measure the motor's rotational speed."
+      },
+      {
+        "title": "Challenge: A Shaft Too Stiff to Measure",
+        "content": "The 3D-printed shaft was too solid: under the fluid torque it barely twisted, so the strain gauge could not detect the deformation and the readings were not accurate. Two fixes followed from this. First, use a hollow or thin-walled shaft so the torque produces a measurable twist, instead of a solid, rigid one. Second, place the strain gauge where it captures the twisting deformation, aligned with the twist for maximum sensitivity."
+      },
+      {
+        "title": "Lessons Learned & Next Steps",
+        "content": "The build covered setting up a Wheatstone bridge, acquiring the strain-gauge voltage with an Arduino-programmed board, and writing code to calculate torque from the gauge readings. The main design lesson is that the gauge type and the shaft material have to be chosen together. A next iteration would use a different shaft material and a strain gauge suited to measuring torsion."
+      }
+    ],
+    "links": {},
+    "gallery": [
+      "/images/projects/viscometer/viscometer-concept.webp",
+      "/images/projects/viscometer/viscometer-equations.webp",
+      "/images/projects/viscometer/viscometer-demo.mp4",
+      "/images/projects/viscometer/viscometer-test-run.mp4"
     ]
   },
   {

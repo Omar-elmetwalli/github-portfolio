@@ -27,18 +27,6 @@
     "width": 718,
     "height": 451
   },
-  "/images/projects/aquaponic-system/viscometer-1.webp": {
-    "width": 551,
-    "height": 338
-  },
-  "/images/projects/aquaponic-system/viscometer-2.webp": {
-    "width": 369,
-    "height": 198
-  },
-  "/images/projects/aquaponic-system/viscometer-cad.webp": {
-    "width": 454,
-    "height": 479
-  },
   "/images/projects/cfd-ml-turbulence/adv-neural-operator.webp": {
     "width": 1920,
     "height": 1153
@@ -186,5 +174,13 @@
   "/images/projects/turbulent-pipe-flow/yplus-wall.webp": {
     "width": 1152,
     "height": 592
+  },
+  "/images/projects/viscometer/viscometer-concept.webp": {
+    "width": 454,
+    "height": 479
+  },
+  "/images/projects/viscometer/viscometer-equations.webp": {
+    "width": 551,
+    "height": 338
   }
 }
